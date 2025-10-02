@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../components/commonStyles';
+import { COLORS } from '../components/commonStyles'; // Verifique se este caminho está certo para seu projeto
 
 const categories = [
-    { name: 'Consultas', icon: 'pulse' },
-    { name: 'Dentes', icon: 'happy-outline' },
-    { name: 'Vacinas', icon: 'eyedrop' },
-    { name: 'Caderneta', icon: 'book' },
-    { name: 'Emergência', icon: 'medkit' },
-    { name: 'Exames', icon: 'flask' },
+    { name: 'Consultas', icon: 'pulse', isVector: true },
+    // AQUI ESTÁ A LINHA CORRIGIDA
+    { name: 'Dentes', icon: require('../../assets/icons/cara-feliz.png'), isVector: false }, 
+    { name: 'Vacinas', icon: 'eyedrop', isVector: true },
+    { name: 'Caderneta', icon: 'book', isVector: true },
+    { name: 'Emergência', icon: 'medkit', isVector: true },
+    { name: 'Exames', icon: 'flask', isVector: true },
 ];
 
 export default function HomeScreen({ navigation }) {
@@ -35,7 +36,11 @@ export default function HomeScreen({ navigation }) {
                             style={styles.categoryCard}
                             onPress={() => cat.name === 'Caderneta' && navigation.navigate('Caderneta')}
                         >
-                            <Ionicons name={cat.icon} size={40} color={COLORS.primary} />
+                            {cat.isVector ? (
+                                <Ionicons name={cat.icon} size={40} color={COLORS.primary} />
+                            ) : (
+                                <Image source={cat.icon} style={styles.categoryIcon} />
+                            )}
                             <Text style={styles.categoryText}>{cat.name}</Text>
                         </TouchableOpacity>
                     ))}
@@ -44,7 +49,6 @@ export default function HomeScreen({ navigation }) {
             
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Últimas Consultas</Text>
-                {/* Aqui viria uma lista de consultas */}
                 <Text style={styles.placeholderText}>Nenhuma consulta recente.</Text>
             </View>
         </ScrollView>
@@ -89,11 +93,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 15,
-        elevation: 2, // Sombra para Android
-        shadowColor: '#000', // Sombra para iOS
+        elevation: 2,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 1.41,
+    },
+    categoryIcon: {
+        width: 40,
+        height: 40,
+        resizeMode: 'contain',
     },
     categoryText: { marginTop: 5, fontWeight: '500', color: COLORS.text },
     section: { padding: 20, paddingTop: 0 },
