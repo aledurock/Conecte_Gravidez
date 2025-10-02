@@ -5,7 +5,7 @@ import { COLORS } from '../components/commonStyles';
 
 const categories = [
     { name: 'Consultas', icon: 'pulse' },
-    { name: 'Dentes', icon: 'happy-outline' },
+    { name: 'Saúde Bucal', icon: 'happy-outline' },
     { name: 'Vacinas', icon: 'eyedrop' },
     { name: 'Caderneta', icon: 'book' },
     { name: 'Emergência', icon: 'medkit' },
