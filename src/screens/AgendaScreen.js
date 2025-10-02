@@ -6,6 +6,9 @@ export default function AgendaScreen() {
   return (
     <View style={commonStyles.container}>
       <Text style={commonStyles.title}>Tela de Agenda</Text>
-          </View>
+      <Text style={commonStyles.title}>Teste</Text>
+      <Text style={commonStyles.title}>Teste</Text>
+      <Text style={commonStyles.title}>Teste</Text>
+    </View>
   );
 }
