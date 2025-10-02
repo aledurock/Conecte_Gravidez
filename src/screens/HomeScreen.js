@@ -4,13 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../components/commonStyles'; // Verifique se este caminho está certo para seu projeto
 
 const categories = [
-    { name: 'Consultas', icon: 'pulse', isVector: true },
-    // AQUI ESTÁ A LINHA CORRIGIDA
-    { name: 'Dentes', icon: require('../../assets/icons/cara-feliz.png'), isVector: false }, 
-    { name: 'Vacinas', icon: 'eyedrop', isVector: true },
-    { name: 'Caderneta', icon: 'book', isVector: true },
-    { name: 'Emergência', icon: 'medkit', isVector: true },
-    { name: 'Exames', icon: 'flask', isVector: true },
+    { name: 'Consultas', icon: 'pulse' },
+    { name: 'Saúde Bucal', icon: 'happy-outline' },
+    { name: 'Vacinas', icon: 'eyedrop' },
+    { name: 'Caderneta', icon: 'book' },
+    { name: 'Emergência', icon: 'medkit' },
+    { name: 'Exames', icon: 'flask' },
 ];
 
 export default function HomeScreen({ navigation }) {
