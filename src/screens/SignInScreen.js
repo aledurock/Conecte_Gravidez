@@ -14,12 +14,17 @@ export default function SignInScreen({ navigation }) {
 
   // Estados para os inputs
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState(''); // CORRIGIDO AQUI
+  const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  // Estados para controlar os placeholders
+  const [userPlaceholder, setUserPlaceholder] = useState('Usuário');
+  const [passPlaceholder, setPassPlaceholder] = useState('Senha');
+
   // Efeito para carregar os dados salvos quando a tela abrir
   useEffect(() => {
+    // ... (nenhuma mudança aqui)
     const loadCredentials = async () => {
       try {
         const savedUser = await AsyncStorage.getItem(STORAGE_KEY_USER);
@@ -40,8 +45,8 @@ export default function SignInScreen({ navigation }) {
 
   // Função de login
   const handleSignIn = async () => {
+    // ... (nenhuma mudança aqui)
     if (rememberMe) {
-      // Se "Lembrar Senha" estiver marcado, SALVE os dados
       try {
         await AsyncStorage.setItem(STORAGE_KEY_USER, username);
         await AsyncStorage.setItem(STORAGE_KEY_PASS, password);
@@ -49,7 +54,6 @@ export default function SignInScreen({ navigation }) {
         Alert.alert("Erro", "Não foi possível salvar seus dados.");
       }
     } else {
-      // Se NÃO estiver marcado, REMOVA os dados salvos
       try {
         await AsyncStorage.removeItem(STORAGE_KEY_USER);
         await AsyncStorage.removeItem(STORAGE_KEY_PASS);
@@ -57,7 +61,6 @@ export default function SignInScreen({ navigation }) {
         Alert.alert("Erro", "Não foi possível remover os dados salvos.");
       }
     }
-    // Chama a função de login do seu contexto
     signIn({ username, password });
   };
 
@@ -72,23 +75,29 @@ export default function SignInScreen({ navigation }) {
       <View style={styles.inputContainer}>
         <Ionicons name="person-outline" size={20} color={COLORS.gray} style={styles.icon} />
         <TextInput
-          placeholder="Usuário"
+          placeholder={userPlaceholder}
+          onFocus={() => setUserPlaceholder('')}
+          onBlur={() => { if (!username) setUserPlaceholder('Usuário') }}
           style={styles.textInput}
           placeholderTextColor={COLORS.gray}
           value={username}
           onChangeText={setUsername}
+          cursorColor="black" // --- ADICIONADO AQUI ---
         />
       </View>
       
       <View style={styles.inputContainer}>
         <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} style={styles.icon} />
         <TextInput
-          placeholder="Senha"
+          placeholder={passPlaceholder}
+          onFocus={() => setPassPlaceholder('')}
+          onBlur={() => { if (!password) setPassPlaceholder('Senha') }}
           style={styles.textInput}
           secureTextEntry={!passwordVisible}
           placeholderTextColor={COLORS.gray}
           value={password}
           onChangeText={setPassword}
+          cursorColor="black" // --- ADICIONADO AQUI ---
         />
         <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
           <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color={COLORS.gray} />
@@ -99,7 +108,7 @@ export default function SignInScreen({ navigation }) {
         <TouchableOpacity style={styles.rememberContainer} onPress={() => setRememberMe(!rememberMe)}>
           <Ionicons 
             name={rememberMe ? 'checkbox' : 'square-outline'} 
-            size={24} 
+            size={20}
             color={rememberMe ? COLORS.darkBlue : COLORS.gray} 
           />
           <Text style={styles.rememberText}>Lembrar Senha</Text>
@@ -111,7 +120,7 @@ export default function SignInScreen({ navigation }) {
       </View>
 
       <TouchableOpacity style={commonStyles.button} onPress={handleSignIn}>
-        <Text style={commonStyles.buttonText}>Ok</Text>
+        <Text style={commonStyles.buttonText}>OK</Text>
       </TouchableOpacity>
       
       <View style={styles.signupContainer}>
@@ -124,27 +133,27 @@ export default function SignInScreen({ navigation }) {
   );
 }
 
-// ESTILOS (sem alterações)
+// Estilos (sem alterações)
 const styles = StyleSheet.create({
   logo: {
     width: 320,
     aspectRatio: 1 / 1.2,
     resizeMode: 'contain',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
     backgroundColor: '#f2f2f2',
-    borderRadius: 12,
+    borderRadius: 1,
     borderWidth: 1,
     borderColor: '#e0e0e0',
     marginBottom: 15,
     paddingHorizontal: 15,
   },
   icon: {
-    marginRight: 12,
+    marginRight: 10,
   },
   textInput: {
       flex: 1,
@@ -166,7 +175,7 @@ const styles = StyleSheet.create({
   rememberText: {
     marginLeft: 8,
     color: COLORS.text,
-    fontSize: 14,
+    fontSize: 13.5,
   },
   signupContainer: {
     flexDirection: 'row',
