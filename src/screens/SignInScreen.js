@@ -1,37 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth } from '../context/AuthContext';
 import { commonStyles, COLORS } from '../components/commonStyles';
 import { Ionicons } from '@expo/vector-icons';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../FireBaseConfig'; // Confio que este caminho está correto como você confirmou
 
-// Chaves para salvar os dados no armazenamento do celular
 const STORAGE_KEY_USER = '@save_user';
 const STORAGE_KEY_PASS = '@save_pass';
 
 export default function SignInScreen({ navigation }) {
-  const { signIn } = useAuth();
-
-  // Estados para os inputs
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
-  // Estados para controlar os placeholders
-  const [userPlaceholder, setUserPlaceholder] = useState('Usuário');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [userPlaceholder, setUserPlaceholder] = useState('E-mail');
   const [passPlaceholder, setPassPlaceholder] = useState('Senha');
 
-  // Efeito para carregar os dados salvos quando a tela abrir
+  // --- NOVO ESTADO ADICIONADO ---
+  const [isLoading, setIsLoading] = useState(false); // Para mostrar feedback de carregamento
+
   useEffect(() => {
-    // ... (nenhuma mudança aqui)
     const loadCredentials = async () => {
       try {
         const savedUser = await AsyncStorage.getItem(STORAGE_KEY_USER);
         const savedPass = await AsyncStorage.getItem(STORAGE_KEY_PASS);
 
         if (savedUser !== null && savedPass !== null) {
-          setUsername(savedUser);
+          setEmail(savedUser);
           setPassword(savedPass);
           setRememberMe(true);
         }
@@ -42,26 +39,50 @@ export default function SignInScreen({ navigation }) {
     loadCredentials();
   }, []);
 
-
-  // Função de login
+  // --- FUNÇÃO DE LOGIN TOTALMENTE ATUALIZADA ---
   const handleSignIn = async () => {
-    // ... (nenhuma mudança aqui)
-    if (rememberMe) {
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY_USER, username);
+    console.log("[LOGIN] 1. Função handleSignIn iniciada.");
+    if (email === '' || password === '') {
+      setErrorMessage('Por favor, preencha e-mail e senha.');
+      return;
+    }
+
+    setIsLoading(true); // Inicia o carregamento
+    setErrorMessage(''); // Limpa erros antigos
+
+    try {
+      console.log("[LOGIN] 2. Entrou no bloco TRY. Tentando autenticar com Firebase...");
+      await signInWithEmailAndPassword(auth, email, password);
+      
+      console.log("[LOGIN] 3. SUCESSO! Autenticação no Firebase concluída.");
+
+      if (rememberMe) {
+        await AsyncStorage.setItem(STORAGE_KEY_USER, email);
         await AsyncStorage.setItem(STORAGE_KEY_PASS, password);
-      } catch (e) {
-        Alert.alert("Erro", "Não foi possível salvar seus dados.");
-      }
-    } else {
-      try {
+      } else {
         await AsyncStorage.removeItem(STORAGE_KEY_USER);
         await AsyncStorage.removeItem(STORAGE_KEY_PASS);
-      } catch (e) {
-        Alert.alert("Erro", "Não foi possível remover os dados salvos.");
       }
+      
+      console.log("[LOGIN] 4. Navegando para a tela 'Home'...");
+      navigation.navigate('Home');
+
+    } catch (error) {
+      console.error("[LOGIN] 5. ERRO! Caiu no bloco CATCH. O erro completo é:", error);
+      
+      if (error.code === 'auth/invalid-credential') {
+        setErrorMessage('Login/Senha Inválidos');
+      } else if (error.code === 'auth/network-request-failed') {
+        setErrorMessage('Erro de conexão. Verifique sua internet.');
+      } else {
+        setErrorMessage('Ocorreu um erro inesperado.');
+        console.log(`[LOGIN] Código do erro não tratado: ${error.code}`);
+      }
+    } finally {
+      // Este bloco SEMPRE será executado, não importa se deu certo ou errado
+      console.log("[LOGIN] 6. Entrou no bloco FINALLY. Finalizando o processo.");
+      setIsLoading(false); // Finaliza o carregamento
     }
-    signIn({ username, password });
   };
 
   return (
@@ -77,12 +98,14 @@ export default function SignInScreen({ navigation }) {
         <TextInput
           placeholder={userPlaceholder}
           onFocus={() => setUserPlaceholder('')}
-          onBlur={() => { if (!username) setUserPlaceholder('Usuário') }}
+          onBlur={() => { if (!email) setUserPlaceholder('E-mail') }}
           style={styles.textInput}
           placeholderTextColor={COLORS.gray}
-          value={username}
-          onChangeText={setUsername}
-          cursorColor="black" // --- ADICIONADO AQUI ---
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          cursorColor="black"
         />
       </View>
       
@@ -97,12 +120,14 @@ export default function SignInScreen({ navigation }) {
           placeholderTextColor={COLORS.gray}
           value={password}
           onChangeText={setPassword}
-          cursorColor="black" // --- ADICIONADO AQUI ---
+          cursorColor="black"
         />
         <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
           <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color={COLORS.gray} />
         </TouchableOpacity>
       </View>
+      
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       
       <View style={styles.optionsContainer}>
         <TouchableOpacity style={styles.rememberContainer} onPress={() => setRememberMe(!rememberMe)}>
@@ -119,8 +144,17 @@ export default function SignInScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={commonStyles.button} onPress={handleSignIn}>
-        <Text style={commonStyles.buttonText}>OK</Text>
+      {/* --- BOTÃO ATUALIZADO --- */}
+      <TouchableOpacity 
+        style={[commonStyles.button, isLoading && styles.buttonDisabled]} // Estilo de desabilitado
+        onPress={handleSignIn} 
+        disabled={isLoading} // Desabilita o botão enquanto carrega
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#ffffff" /> // Mostra um ícone de carregamento
+        ) : (
+          <Text style={commonStyles.buttonText}>OK</Text> // Mostra o texto normal
+        )}
       </TouchableOpacity>
       
       <View style={styles.signupContainer}>
@@ -133,7 +167,7 @@ export default function SignInScreen({ navigation }) {
   );
 }
 
-// Estilos (sem alterações)
+// --- ESTILOS ATUALIZADOS ---
 const styles = StyleSheet.create({
   logo: {
     width: 320,
@@ -190,5 +224,16 @@ const styles = StyleSheet.create({
     color: '#6A5ACD',
     fontWeight: 'bold',
     fontSize: 16,
-  }
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  // --- NOVO ESTILO ADICIONADO ---
+  buttonDisabled: {
+    backgroundColor: '#999', // Cor do botão quando desabilitado
+  },
 });
