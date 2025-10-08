@@ -1,10 +1,12 @@
+// src/screens/SignInScreen.js
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { commonStyles, COLORS } from '../components/commonStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../FireBaseConfig'; // Confio que este caminho está correto como você confirmou
+import { auth } from '../FireBaseConfig';
 
 const STORAGE_KEY_USER = '@save_user';
 const STORAGE_KEY_PASS = '@save_pass';
@@ -17,9 +19,7 @@ export default function SignInScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [userPlaceholder, setUserPlaceholder] = useState('E-mail');
   const [passPlaceholder, setPassPlaceholder] = useState('Senha');
-
-  // --- NOVO ESTADO ADICIONADO ---
-  const [isLoading, setIsLoading] = useState(false); // Para mostrar feedback de carregamento
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const loadCredentials = async () => {
@@ -39,7 +39,6 @@ export default function SignInScreen({ navigation }) {
     loadCredentials();
   }, []);
 
-  // --- FUNÇÃO DE LOGIN TOTALMENTE ATUALIZADA ---
   const handleSignIn = async () => {
     console.log("[LOGIN] 1. Função handleSignIn iniciada.");
     if (email === '' || password === '') {
@@ -47,8 +46,8 @@ export default function SignInScreen({ navigation }) {
       return;
     }
 
-    setIsLoading(true); // Inicia o carregamento
-    setErrorMessage(''); // Limpa erros antigos
+    setIsLoading(true);
+    setErrorMessage('');
 
     try {
       console.log("[LOGIN] 2. Entrou no bloco TRY. Tentando autenticar com Firebase...");
@@ -64,8 +63,8 @@ export default function SignInScreen({ navigation }) {
         await AsyncStorage.removeItem(STORAGE_KEY_PASS);
       }
       
-      console.log("[LOGIN] 4. Navegando para a tela 'Home'...");
-      navigation.navigate('Home');
+      console.log("[LOGIN] 4. Login bem-sucedido. O AppNavigator fará a troca de telas.");
+      // A linha de navegação foi REMOVIDA daqui, pois o AuthContext e o AppNavigator agora cuidam disso.
 
     } catch (error) {
       console.error("[LOGIN] 5. ERRO! Caiu no bloco CATCH. O erro completo é:", error);
@@ -79,9 +78,8 @@ export default function SignInScreen({ navigation }) {
         console.log(`[LOGIN] Código do erro não tratado: ${error.code}`);
       }
     } finally {
-      // Este bloco SEMPRE será executado, não importa se deu certo ou errado
       console.log("[LOGIN] 6. Entrou no bloco FINALLY. Finalizando o processo.");
-      setIsLoading(false); // Finaliza o carregamento
+      setIsLoading(false);
     }
   };
 
@@ -144,16 +142,15 @@ export default function SignInScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* --- BOTÃO ATUALIZADO --- */}
       <TouchableOpacity 
-        style={[commonStyles.button, isLoading && styles.buttonDisabled]} // Estilo de desabilitado
+        style={[commonStyles.button, isLoading && styles.buttonDisabled]}
         onPress={handleSignIn} 
-        disabled={isLoading} // Desabilita o botão enquanto carrega
+        disabled={isLoading}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color="#ffffff" /> // Mostra um ícone de carregamento
+          <ActivityIndicator size="small" color="#ffffff" />
         ) : (
-          <Text style={commonStyles.buttonText}>OK</Text> // Mostra o texto normal
+          <Text style={commonStyles.buttonText}>OK</Text>
         )}
       </TouchableOpacity>
       
@@ -167,7 +164,6 @@ export default function SignInScreen({ navigation }) {
   );
 }
 
-// --- ESTILOS ATUALIZADOS ---
 const styles = StyleSheet.create({
   logo: {
     width: 320,
@@ -208,7 +204,7 @@ const styles = StyleSheet.create({
   },
   rememberText: {
     marginLeft: 8,
-    color: COLORS.text,
+    color: 'black',
     fontSize: 13.5,
   },
   signupContainer: {
@@ -232,8 +228,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  // --- NOVO ESTILO ADICIONADO ---
   buttonDisabled: {
-    backgroundColor: '#999', // Cor do botão quando desabilitado
+    backgroundColor: '#999',
   },
 });

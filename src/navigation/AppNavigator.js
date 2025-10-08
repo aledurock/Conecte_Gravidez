@@ -1,72 +1,52 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../context/AuthContext';
+// src/navigation/AppNavigator.js
 
-// Importação das Telas
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAuth } from '../context/AuthContext'; // Importamos o nosso hook
+
+// Importe suas telas
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-import PostSignUpScreen from '../screens/PostSignUpScreen';
 import HomeScreen from '../screens/HomeScreen';
-import CadernetaScreen from '../screens/CadernetaScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import DoutoresScreen from '../screens/DoutoresScreen';
-import AgendaScreen from '../screens/AgendaScreen';
+import PostSignUpScreen from '../screens/PostSignUpScreen';
+import { View, ActivityIndicator } from 'react-native';
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-const HomeStack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
-function HomeNavigator() {
-  return (
-    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-      <HomeStack.Screen name="HomeMain" component={HomeScreen} />
-      <HomeStack.Screen name="Caderneta" component={CadernetaScreen} />
-    </HomeStack.Navigator>
-  );
-}
+// Grupo de telas de Autenticação
+const AuthStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="SignIn" component={SignInScreen} />
+    <Stack.Screen name="SignUp" component={SignUpScreen} />
+    <Stack.Screen name="PostSignUp" component={PostSignUpScreen} />
+  </Stack.Navigator>
+);
 
-
-function MainApp() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Doutores') iconName = focused ? 'medkit' : 'medkit-outline';
-          else if (route.name === 'Agenda') iconName = focused ? 'calendar' : 'calendar-outline';
-          else if (route.name === 'Perfil') iconName = focused ? 'person-circle' : 'person-circle-outline';
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#3B5998',
-        tabBarInactiveTintColor: 'gray',
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeNavigator} />
-      <Tab.Screen name="Doutores" component={DoutoresScreen} />
-      <Tab.Screen name="Agenda" component={AgendaScreen} />
-      <Tab.Screen name="Perfil" component={ProfileScreen} />
-    </Tab.Navigator>
-  );
-}
+// Grupo de telas Principais do App
+const AppStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Home" component={HomeScreen} />
+    {/* Adicione outras telas do seu app aqui (Profile, Agenda, etc.) */}
+  </Stack.Navigator>
+);
 
 export default function AppNavigator() {
-  const { userToken } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  // Enquanto o app verifica se existe um usuário logado, mostramos um loading
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {userToken == null ? (
-        <>
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
-          <Stack.Screen name="PostSignUp" component={PostSignUpScreen} />
-        </>
-      ) : (
-        <Stack.Screen name="MainApp" component={MainApp} />
-      )}
-    </Stack.Navigator>
+    <NavigationContainer>
+      {user ? <AppStack /> : <AuthStack />}
+      {/* A linha mágica acima: SE 'user' existe, mostra AppStack, SENÃO, mostra AuthStack */}
+    </NavigationContainer>
   );
 }
