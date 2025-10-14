@@ -13,6 +13,14 @@ import CadernetaScreen from '../screens/CadernetaScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import DoutoresScreen from '../screens/DoutoresScreen';
 import AgendaScreen from '../screens/AgendaScreen';
+import QuestionnaireNameScreen from '../screens/QuestionnaireNameScreen';
+import QuestionnaireDateScreen from '../screens/QuestionnaireDateScreen';
+import QuestionnaireDumScreen from '../screens/QuestionnaireDumScreen';
+import QuestionnaireDppScreen from '../screens/QuestionnaireDppScreen';
+import QuestionnaireFirstPregnancyScreen from '../screens/QuestionnaireFirstPregnancyScreen';
+// --- 1. IMPORTE A TELA FINAL ---
+import QuestionnairePrenatalScreen from '../screens/QuestionnairePrenatalScreen';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,6 +71,55 @@ export default function AppNavigator() {
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="PostSignUp" component={PostSignUpScreen} />
+          <Stack.Screen
+            name="QuestionnaireName"
+            component={QuestionnaireNameScreen}
+            options={{
+              headerShown: true,
+              title: 'Complete seu Cadastro'
+            }}
+          />
+          <Stack.Screen
+            name="QuestionnaireDate"
+            component={QuestionnaireDateScreen}
+            options={{
+              headerShown: true,
+              title: 'Informações da Gestação'
+            }}
+          />
+          <Stack.Screen
+            name="QuestionnaireDumScreen"
+            component={QuestionnaireDumScreen}
+            options={{
+              headerShown: true,
+              title: 'Última Menstruação (DUM)'
+            }}
+          />
+          <Stack.Screen
+            name="QuestionnaireDppScreen"
+            component={QuestionnaireDppScreen}
+            options={{
+              headerShown: true,
+              title: 'Data Provável do Parto (DPP)'
+            }}
+          />
+          <Stack.Screen
+            name="QuestionnaireFirstPregnancy"
+            component={QuestionnaireFirstPregnancyScreen}
+            options={{
+              headerShown: true,
+              title: 'Informações Adicionais'
+            }}
+          />
+          {/* --- 2. ADICIONE A ROTA FINAL AQUI --- */}
+          <Stack.Screen
+            name="QuestionnairePrenatal"
+            component={QuestionnairePrenatalScreen}
+            options={{
+              headerShown: true,
+              title: 'Consulta Pré-Natal'
+            }}
+          />
         </>
       ) : (
         <Stack.Screen name="MainApp" component={MainApp} />
@@ -70,3 +127,4 @@ export default function AppNavigator() {
     </Stack.Navigator>
   );
 }
+
