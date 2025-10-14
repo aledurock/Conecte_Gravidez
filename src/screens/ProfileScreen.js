@@ -39,7 +39,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem}>
                 <Ionicons name="share-social-outline" size={24} color={COLORS.text}/>
-                <Text style={styles.menuText}>Share this App</Text>
+                <Text style={styles.menuText}>Compartilhar o App</Text>
                 <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
             </TouchableOpacity>
         </View>
