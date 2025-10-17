@@ -1,5 +1,4 @@
 import React from 'react';
-// A MUDANÇA ESTÁ AQUI: Importamos da biblioteca correta
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { ScrollView, StyleSheet } from 'react-native';
 import { COLORS } from './commonStyles';

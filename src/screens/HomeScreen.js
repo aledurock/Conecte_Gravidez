@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: COLORS.primary,
         paddingHorizontal: 20,
-        paddingTop: 30,
+        paddingTop: 57,
         paddingBottom: 25,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginLeft: 15,
+        alignItems: 'cen'
     },
     headerSubtext: {
         color: COLORS.white,

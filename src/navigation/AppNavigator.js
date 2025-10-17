@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 // Importação das Telas
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-import PostSignUpScreen from '../screens/PostSignUpScreen';
+// A importação de PostSignUpScreen foi removida
 import HomeScreen from '../screens/HomeScreen';
 import CadernetaScreen from '../screens/CadernetaScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -18,7 +18,6 @@ import QuestionnaireDateScreen from '../screens/QuestionnaireDateScreen';
 import QuestionnaireDumScreen from '../screens/QuestionnaireDumScreen';
 import QuestionnaireDppScreen from '../screens/QuestionnaireDppScreen';
 import QuestionnaireFirstPregnancyScreen from '../screens/QuestionnaireFirstPregnancyScreen';
-// --- 1. IMPORTE A TELA FINAL ---
 import QuestionnairePrenatalScreen from '../screens/QuestionnairePrenatalScreen';
 
 
@@ -70,7 +69,7 @@ export default function AppNavigator() {
         <>
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
-          <Stack.Screen name="PostSignUp" component={PostSignUpScreen} />
+          {/* A tela PostSignUp foi removida desta lista */}
           <Stack.Screen
             name="QuestionnaireName"
             component={QuestionnaireNameScreen}
@@ -111,7 +110,6 @@ export default function AppNavigator() {
               title: 'Informações Adicionais'
             }}
           />
-          {/* --- 2. ADICIONE A ROTA FINAL AQUI --- */}
           <Stack.Screen
             name="QuestionnairePrenatal"
             component={QuestionnairePrenatalScreen}

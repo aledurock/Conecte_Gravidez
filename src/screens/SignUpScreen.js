@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { useAuth } from '../context/AuthContext'; 
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../context/AuthContext';
 import { commonStyles, COLORS } from '../components/commonStyles';
 
 export default function SignUpScreen({ navigation }) {
-    // 1. ESTADO PARA O NOME REMOVIDO
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    
-    // A função signUp do contexto pode ser usada futuramente para o Firebase
-    const { signUp } = useAuth(); 
 
     const handleSignUp = async () => {
         if (password !== confirmPassword) {
@@ -21,60 +18,73 @@ export default function SignUpScreen({ navigation }) {
             Alert.alert("Erro", "Por favor, preencha todos os campos.");
             return;
         }
-
         try {
-            // Futuramente, esta linha fará o cadastro no Firebase
-            // await signUp(email, password); 
-            console.log('Simulando cadastro do usuário...');
-            
-            // 2. A CORREÇÃO PRINCIPAL: Navegar para a próxima tela
-            // Após o cadastro, o app vai para a tela de decisão.
-            navigation.navigate('PostSignUp');
-
+            console.log('Usuário cadastrado com sucesso (simulado).');
+            // --- MUDANÇA PRINCIPAL AQUI ---
+            // Navega diretamente para a primeira pergunta do questionário.
+            navigation.navigate('QuestionnaireName');
         } catch (error) {
             Alert.alert("Erro no Cadastro", "Não foi possível criar a conta.");
-            console.error(error);
         }
     };
 
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={commonStyles.container}
-        >
-            <Text style={commonStyles.title}>Criar uma conta</Text>
-            
-            {/* 3. CAMPO DE INPUT DO NOME REMOVIDO DO VISUAL */}
-            <TextInput 
-                style={commonStyles.input} 
-                placeholder="Email" 
-                value={email} 
-                onChangeText={setEmail} 
-                keyboardType="email-address" 
-                autoCapitalize="none" 
-            />
-            <TextInput 
-                style={commonStyles.input} 
-                placeholder="Senha" 
-                value={password} 
-                onChangeText={setPassword} 
-                secureTextEntry 
-            />
-            <TextInput 
-                style={commonStyles.input} 
-                placeholder="Confirmar Senha" 
-                value={confirmPassword} 
-                onChangeText={setConfirmPassword} 
-                secureTextEntry 
-            />
-
-            <TouchableOpacity style={commonStyles.button} onPress={handleSignUp}>
-                <Text style={commonStyles.buttonText}>Ok</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                <Text style={commonStyles.linkText}>Já tenho uma conta</Text>
-            </TouchableOpacity>
-        </KeyboardAvoidingView>
+        <SafeAreaView style={styles.safeArea}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <ScrollView
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    bounces={true}
+                    overScrollMode="always"
+                >
+                    <View style={commonStyles.container}>
+                        <Text style={commonStyles.title}>Criar uma conta</Text>
+                        <TextInput
+                            style={commonStyles.input}
+                            placeholder="Email"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                        <TextInput
+                            style={commonStyles.input}
+                            placeholder="Senha"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                        <TextInput
+                            style={commonStyles.input}
+                            placeholder="Confirmar Senha"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry
+                        />
+                        <TouchableOpacity style={commonStyles.button} onPress={handleSignUp}>
+                            <Text style={commonStyles.buttonText}>Ok</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                            <Text style={commonStyles.linkText}>Já tenho uma conta</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: COLORS.white,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
+    },
+});
+

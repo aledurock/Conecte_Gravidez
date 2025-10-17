@@ -1,58 +1,71 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { commonStyles, COLORS } from '../components/commonStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
 
 export default function ProfileScreen() {
-    const { signOut } = useAuth();
+    const { signOut, userProfile } = useAuth();
 
-  return (
-    <ScrollView style={styles.container}>
-        <View style={styles.header}>
-            <Ionicons name="person-circle-outline" size={80} color={COLORS.primary} />
-            <Text style={styles.userName}>Usuário</Text>
-            <Text style={styles.userEmail}>email@exemplo.com</Text>
-        </View>
+    return (
+        // 1. Adicionado SafeAreaView para consistência de layout
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                // 2. Adicionadas as propriedades para o efeito "esticado"
+                bounces={true}
+                overScrollMode="always"
+            >
+                <View style={styles.header}>
+                    <Ionicons name="person-circle-outline" size={80} color={COLORS.primary} />
+                    {/* 3. Nome e email agora são dinâmicos, como na HomeScreen */}
+                    <Text style={styles.userName}>{userProfile?.name || 'Usuário'}</Text>
+                    <Text style={styles.userEmail}>email@exemplo.com</Text>
+                </View>
 
-        <View style={styles.menuSection}>
-            <Text style={styles.sectionTitle}>Configurações Gerais</Text>
-            <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="moon-outline" size={24} color={COLORS.text}/>
-                <Text style={styles.menuText}>Modo Escuro e Claro</Text>
-                <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="lock-closed-outline" size={24} color={COLORS.text}/>
-                <Text style={styles.menuText}>Alterar Senha</Text>
-                <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
-            </TouchableOpacity>
-        </View>
+                {/* Adicionado um container para o conteúdo ter espaçamento */}
+                <View style={styles.contentContainer}>
+                    <View style={styles.menuSection}>
+                        <Text style={styles.sectionTitle}>Configurações Gerais</Text>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Ionicons name="moon-outline" size={24} color={COLORS.text}/>
+                            <Text style={styles.menuText}>Modo Escuro e Claro</Text>
+                            <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Ionicons name="lock-closed-outline" size={24} color={COLORS.text}/>
+                            <Text style={styles.menuText}>Alterar Senha</Text>
+                            <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
+                        </TouchableOpacity>
+                    </View>
 
-        <View style={styles.menuSection}>
-            <Text style={styles.sectionTitle}>Informações</Text>
-             <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="information-circle-outline" size={24} color={COLORS.text}/>
-                <Text style={styles.menuText}>Sobre o App</Text>
-                <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="share-social-outline" size={24} color={COLORS.text}/>
-                <Text style={styles.menuText}>Compartilhar o App</Text>
-                <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
-            </TouchableOpacity>
-        </View>
+                    <View style={styles.menuSection}>
+                        <Text style={styles.sectionTitle}>Informações</Text>
+                         <TouchableOpacity style={styles.menuItem}>
+                            <Ionicons name="information-circle-outline" size={24} color={COLORS.text}/>
+                            <Text style={styles.menuText}>Sobre o App</Text>
+                            <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.menuItem}>
+                            <Ionicons name="share-social-outline" size={24} color={COLORS.text}/>
+                            <Text style={styles.menuText}>Compartilhar o App</Text>
+                            <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
+                        </TouchableOpacity>
+                    </View>
 
-        <TouchableOpacity style={commonStyles.button} onPress={signOut}>
-            <Text style={commonStyles.buttonText}>Trocar Usuário (Sair)</Text>
-        </TouchableOpacity>
-    </ScrollView>
-  );
+                    <TouchableOpacity style={[commonStyles.button, { marginTop: 20 }]} onPress={signOut}>
+                        <Text style={commonStyles.buttonText}>Trocar Usuário (Sair)</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
         backgroundColor: COLORS.lightGray,
     },
@@ -60,7 +73,9 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
         paddingVertical: 30,
         alignItems: 'center',
-        marginBottom: 10,
+    },
+    contentContainer: {
+        padding: 20,
     },
     userName: {
         fontSize: 22,
@@ -73,13 +88,16 @@ const styles = StyleSheet.create({
     },
     menuSection: {
         backgroundColor: COLORS.white,
-        marginBottom: 10,
+        marginBottom: 20,
+        borderRadius: 10,
+        overflow: 'hidden', // Garante que as bordas arredondadas sejam aplicadas
     },
     sectionTitle: {
         fontSize: 14,
         fontWeight: 'bold',
         color: COLORS.gray,
-        padding: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.lightGray,
     },
@@ -94,3 +112,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
     }
 });
+
