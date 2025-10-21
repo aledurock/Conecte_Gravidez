@@ -7,6 +7,7 @@ import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: "AIzaSyDdu-qsdhLNx8rn3YubCC_phSCr05Amtsc",
   authDomain: "conecte-gravidez.firebaseapp.com",
+  databaseURL: "https://conecte-gravidez-default-rtdb.firebaseio.com",
   projectId: "conecte-gravidez",
   storageBucket: "conecte-gravidez.firebasestorage.app",
   messagingSenderId: "517923423605",
