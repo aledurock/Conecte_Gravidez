@@ -86,7 +86,12 @@ const HomeScreen = ({ navigation }) => {
                         <TouchableOpacity style={styles.actionButton}>
                             <Text style={styles.actionButtonText}>Consultas</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.actionButton}>
+                        
+                        {/* *** BOTÃO ATUALIZADO *** */}
+                        <TouchableOpacity 
+                            style={styles.actionButton}
+                            onPress={() => navigation.navigate('RelatosSintomas')} // Leva para a nova tela
+                        >
                             <Text style={styles.actionButtonText}>Relatar Sintomas</Text>
                         </TouchableOpacity>
                     </View>
@@ -110,7 +115,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: COLORS.primary,
         paddingHorizontal: 20,
-        paddingTop: 57,
+        paddingTop: 30,
         paddingBottom: 25,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
@@ -122,11 +127,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginLeft: 15,
-        alignItems: 'cen'
+        alignItems: 'center'
     },
     headerSubtext: {
         color: COLORS.white,
-        fontSize: 14,
+        fontSize: 15,
         marginLeft: 15,
     },
     contentContainer: {
@@ -215,4 +220,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-

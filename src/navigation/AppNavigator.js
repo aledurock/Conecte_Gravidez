@@ -4,10 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
+
 // Importação das Telas
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-// A importação de PostSignUpScreen foi removida
 import HomeScreen from '../screens/HomeScreen';
 import CadernetaScreen from '../screens/CadernetaScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -19,6 +19,8 @@ import QuestionnaireDumScreen from '../screens/QuestionnaireDumScreen';
 import QuestionnaireDppScreen from '../screens/QuestionnaireDppScreen';
 import QuestionnaireFirstPregnancyScreen from '../screens/QuestionnaireFirstPregnancyScreen';
 import QuestionnairePrenatalScreen from '../screens/QuestionnairePrenatalScreen';
+import RelatosSintomasScreen from '../screens/RelatosSintomas';
+import SintomasScreen from '../screens/Sintomas'; 
 
 
 const Stack = createStackNavigator();
@@ -30,12 +32,18 @@ function HomeNavigator() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="Caderneta" component={CadernetaScreen} />
+      <HomeStack.Screen name="RelatosSintomas" component={RelatosSintomasScreen} />
+
+      {/* *** LINHA NOVA *** */}
+      <HomeStack.Screen name="HistoricoSintomas" component={SintomasScreen} />
+
     </HomeStack.Navigator>
   );
 }
 
 
 function MainApp() {
+  // ... (código existente e sem alterações)
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -61,6 +69,7 @@ function MainApp() {
 }
 
 export default function AppNavigator() {
+  // ... (código existente e sem alterações)
   const { userToken } = useAuth();
 
   return (
@@ -69,7 +78,6 @@ export default function AppNavigator() {
         <>
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
-          {/* A tela PostSignUp foi removida desta lista */}
           <Stack.Screen
             name="QuestionnaireName"
             component={QuestionnaireNameScreen}
@@ -125,4 +133,3 @@ export default function AppNavigator() {
     </Stack.Navigator>
   );
 }
-

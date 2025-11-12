@@ -4,17 +4,23 @@ import { useAuth } from '../context/AuthContext';
 import { commonStyles, COLORS } from '../components/commonStyles';
 
 export default function QuestionnairePrenatalScreen({ navigation }) {
-    const { updateUserProfile, signIn } = useAuth();
+    // *** A CORREÇÃO ESTÁ AQUI ***
+    // Trocamos 'signIn' (que não existe) por 'setUserToken' (que é a correta)
+    const { updateUserProfile, setUserToken } = useAuth();
 
     // Função para salvar a resposta e finalizar o cadastro
     const handleSelection = (hasConsultation) => {
         updateUserProfile({ hasPrenatalConsultation: hasConsultation });
-        signIn(); // Finaliza o questionário e loga o usuário
+        
+        // *** A CORREÇÃO ESTÁ AQUI ***
+        // Usamos 'setUserToken' para "logar" o usuário no protótipo
+        setUserToken('fake-token-prototipo'); // Isso fará o AppNavigator mudar de tela
     };
 
     // O botão PULAR apenas faz o login sem salvar a informação
     const handleSkip = () => {
-        signIn();
+        // *** A CORREÇÃO ESTÁ AQUI ***
+        setUserToken('fake-token-prototipo');
     };
 
     return (
@@ -74,4 +80,3 @@ const styles = StyleSheet.create({
         color: COLORS.primary,
     }
 });
-
