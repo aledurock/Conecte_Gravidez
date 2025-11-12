@@ -11,7 +11,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import HomeScreen from '../screens/HomeScreen';
 import CadernetaScreen from '../screens/CadernetaScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import DoutoresScreen from '../screens/DoutoresScreen';
+// import DoutoresScreen from '../screens/DoutoresScreen'; // <-- REMOVIDO
 import AgendaScreen from '../screens/AgendaScreen';
 import QuestionnaireNameScreen from '../screens/QuestionnaireNameScreen';
 import QuestionnaireDateScreen from '../screens/QuestionnaireDateScreen';
@@ -21,6 +21,8 @@ import QuestionnaireFirstPregnancyScreen from '../screens/QuestionnaireFirstPreg
 import QuestionnairePrenatalScreen from '../screens/QuestionnairePrenatalScreen';
 import RelatosSintomasScreen from '../screens/RelatosSintomas';
 import SintomasScreen from '../screens/Sintomas'; 
+// *** LINHA NOVA ***
+import ConsultasScreen from '../screens/ConsultasScreen';
 
 
 const Stack = createStackNavigator();
@@ -33,9 +35,10 @@ function HomeNavigator() {
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
       <HomeStack.Screen name="Caderneta" component={CadernetaScreen} />
       <HomeStack.Screen name="RelatosSintomas" component={RelatosSintomasScreen} />
-
-      {/* *** LINHA NOVA *** */}
       <HomeStack.Screen name="HistoricoSintomas" component={SintomasScreen} />
+      
+      {/* *** LINHA NOVA *** */}
+      <HomeStack.Screen name="Consultas" component={ConsultasScreen} />
 
     </HomeStack.Navigator>
   );
@@ -43,14 +46,13 @@ function HomeNavigator() {
 
 
 function MainApp() {
-  // ... (código existente e sem alterações)
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Doutores') iconName = focused ? 'medkit' : 'medkit-outline';
+          // else if (route.name === 'Doutores') iconName = focused ? 'medkit' : 'medkit-outline'; // <-- REMOVIDO
           else if (route.name === 'Agenda') iconName = focused ? 'calendar' : 'calendar-outline';
           else if (route.name === 'Perfil') iconName = focused ? 'person-circle' : 'person-circle-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -61,7 +63,7 @@ function MainApp() {
       })}
     >
       <Tab.Screen name="Home" component={HomeNavigator} />
-      <Tab.Screen name="Doutores" component={DoutoresScreen} />
+      {/* <Tab.Screen name="Doutores" component={DoutoresScreen} /> */ /* <-- REMOVIDO */}
       <Tab.Screen name="Agenda" component={AgendaScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
@@ -69,7 +71,6 @@ function MainApp() {
 }
 
 export default function AppNavigator() {
-  // ... (código existente e sem alterações)
   const { userToken } = useAuth();
 
   return (

@@ -1,25 +1,22 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { commonStyles, COLORS } from '../components/commonStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function QuestionnairePrenatalScreen({ navigation }) {
-    // *** A CORREÇÃO ESTÁ AQUI ***
-    // Trocamos 'signIn' (que não existe) por 'setUserToken' (que é a correta)
+
+
     const { updateUserProfile, setUserToken } = useAuth();
 
-    // Função para salvar a resposta e finalizar o cadastro
     const handleSelection = (hasConsultation) => {
         updateUserProfile({ hasPrenatalConsultation: hasConsultation });
         
-        // *** A CORREÇÃO ESTÁ AQUI ***
-        // Usamos 'setUserToken' para "logar" o usuário no protótipo
-        setUserToken('fake-token-prototipo'); // Isso fará o AppNavigator mudar de tela
+        setUserToken('fake-token-prototipo'); 
     };
 
-    // O botão PULAR apenas faz o login sem salvar a informação
     const handleSkip = () => {
-        // *** A CORREÇÃO ESTÁ AQUI ***
+
         setUserToken('fake-token-prototipo');
     };
 

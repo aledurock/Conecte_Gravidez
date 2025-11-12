@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { calculateGestationDetails } from '../utils/gestationCalculator';
 import { BABY_SIZES } from '../constants/babyData';
 import { DAILY_TIPS } from '../constants/dailyTips';
 import { commonStyles, COLORS } from '../components/commonStyles';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const fruitImages = {
     'semente.png': require('../../assets/images/niveis_bebe/semente.png'),
@@ -69,6 +70,7 @@ const HomeScreen = ({ navigation }) => {
                                 <Text style={styles.mainCardText}>
                                     Seu bebê tem o tamanho de um{' '}
                                     <Text style={{ fontWeight: 'bold' }}>{babySizeInfo.size.replace('uma ', '').replace('um ', '')}</Text>
+
                                 </Text>
                                 <Text style={styles.countdownText}>
                                     Faltam aproximadamente {gestationInfo.daysRemaining} dias para o grande encontro!
@@ -83,11 +85,14 @@ const HomeScreen = ({ navigation }) => {
                     )}
 
                     <View style={styles.actionButtonsContainer}>
-                        <TouchableOpacity style={styles.actionButton}>
+                        {/* *** BOTÃO ATUALIZADO *** */}
+                        <TouchableOpacity 
+                            style={styles.actionButton}
+                            onPress={() => navigation.navigate('Consultas')}
+                        >
                             <Text style={styles.actionButtonText}>Consultas</Text>
                         </TouchableOpacity>
                         
-                        {/* *** BOTÃO ATUALIZADO *** */}
                         <TouchableOpacity 
                             style={styles.actionButton}
                             onPress={() => navigation.navigate('RelatosSintomas')} // Leva para a nova tela
@@ -96,10 +101,29 @@ const HomeScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
 
+                    {/* --- INÍCIO DA NOVA SEÇÃO (MOVIDA PARA CIMA) --- */}
+                    <View style={styles.actionButtonsContainer}>
+                        <TouchableOpacity 
+                            style={styles.actionButton}
+                            onPress={() => navigation.navigate('HistoricoSintomas')}
+                        >
+                            <Text style={styles.actionButtonText}>Histórico de Sintomas</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            style={styles.actionButton}
+                            onPress={() => console.log('Botão "Mais..." pressionado')}
+                        >
+                            <Text style={styles.actionButtonText}>Mais...</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {/* --- FIM DA NOVA SEÇÃO --- */}
+
+                    {/* --- DICA DO DIA (MOVIDA PARA BAIXO) --- */}
                     <View style={styles.tipCard}>
                         <Text style={styles.tipTitle}>Dica do Dia</Text>
                         <Text style={styles.tipText}>{dailyTip}</Text>
                     </View>
+
                 </View>
             </ScrollView>
         </SafeAreaView>

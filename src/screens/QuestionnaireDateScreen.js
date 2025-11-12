@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { commonStyles, COLORS } from '../components/commonStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function QuestionnaireDateScreen({ navigation }) {
     const { userProfile } = useAuth();
