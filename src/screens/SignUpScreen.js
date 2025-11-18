@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; // 👈 JÁ ESTAVA AQUI
 import { commonStyles, COLORS } from '../components/commonStyles';
 
 export default function SignUpScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    // --- 1. PEGAR A FUNÇÃO CORRETA ---
+    // (Nós só queremos 'updateUserProfile', não 'signUp')
+    const { updateUserProfile } = useAuth();
 
     const handleSignUp = async () => {
         if (password !== confirmPassword) {
@@ -19,10 +23,16 @@ export default function SignUpScreen({ navigation }) {
             return;
         }
         try {
-            console.log('Usuário cadastrado com sucesso (simulado).');
-            // --- MUDANÇA PRINCIPAL AQUI ---
-            // Navega diretamente para a primeira pergunta do questionário.
+            // --- 2. SALVAR O EMAIL ---
+            // Isso salva o email no context SEM logar o usuário
+            // para que o ProfileScreen possa usá-lo mais tarde.
+            updateUserProfile({ email: email });
+
+            // --- 3. NAVEGAR (COMO ESTAVA ANTES) ---
+            // O userToken ainda é null, então o app navega
+            // corretamente para a próxima tela do questionário.
             navigation.navigate('QuestionnaireName');
+            
         } catch (error) {
             Alert.alert("Erro no Cadastro", "Não foi possível criar a conta.");
         }
@@ -87,4 +97,3 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
-

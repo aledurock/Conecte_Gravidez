@@ -4,14 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
-
 // Importação das Telas
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import HomeScreen from '../screens/HomeScreen';
 import CadernetaScreen from '../screens/CadernetaScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-// import DoutoresScreen from '../screens/DoutoresScreen'; // <-- REMOVIDO
 import AgendaScreen from '../screens/AgendaScreen';
 import QuestionnaireNameScreen from '../screens/QuestionnaireNameScreen';
 import QuestionnaireDateScreen from '../screens/QuestionnaireDateScreen';
@@ -20,10 +18,10 @@ import QuestionnaireDppScreen from '../screens/QuestionnaireDppScreen';
 import QuestionnaireFirstPregnancyScreen from '../screens/QuestionnaireFirstPregnancyScreen';
 import QuestionnairePrenatalScreen from '../screens/QuestionnairePrenatalScreen';
 import RelatosSintomasScreen from '../screens/RelatosSintomas';
-import SintomasScreen from '../screens/Sintomas'; 
-// *** LINHA NOVA ***
+import SintomasScreen from '../screens/Sintomas';
 import ConsultasScreen from '../screens/ConsultasScreen';
-
+import MaisScreen from '../screens/MaisScreen';
+import AboutScreen from '../screens/AboutScreen'; // 👈 1. IMPORTA A NOVA TELA
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,14 +34,11 @@ function HomeNavigator() {
       <HomeStack.Screen name="Caderneta" component={CadernetaScreen} />
       <HomeStack.Screen name="RelatosSintomas" component={RelatosSintomasScreen} />
       <HomeStack.Screen name="HistoricoSintomas" component={SintomasScreen} />
-      
-      {/* *** LINHA NOVA *** */}
       <HomeStack.Screen name="Consultas" component={ConsultasScreen} />
-
+      <HomeStack.Screen name="Mais" component={MaisScreen} />
     </HomeStack.Navigator>
   );
 }
-
 
 function MainApp() {
   return (
@@ -51,10 +46,12 @@ function MainApp() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-          // else if (route.name === 'Doutores') iconName = focused ? 'medkit' : 'medkit-outline'; // <-- REMOVIDO
-          else if (route.name === 'Agenda') iconName = focused ? 'calendar' : 'calendar-outline';
-          else if (route.name === 'Perfil') iconName = focused ? 'person-circle' : 'person-circle-outline';
+          if (route.name === 'Home')
+            iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Agenda')
+            iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Perfil')
+            iconName = focused ? 'person-circle' : 'person-circle-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#3B5998',
@@ -63,7 +60,6 @@ function MainApp() {
       })}
     >
       <Tab.Screen name="Home" component={HomeNavigator} />
-      {/* <Tab.Screen name="Doutores" component={DoutoresScreen} /> */ /* <-- REMOVIDO */}
       <Tab.Screen name="Agenda" component={AgendaScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
@@ -84,7 +80,7 @@ export default function AppNavigator() {
             component={QuestionnaireNameScreen}
             options={{
               headerShown: true,
-              title: 'Complete seu Cadastro'
+              title: 'Complete seu Cadastro',
             }}
           />
           <Stack.Screen
@@ -92,7 +88,7 @@ export default function AppNavigator() {
             component={QuestionnaireDateScreen}
             options={{
               headerShown: true,
-              title: 'Informações da Gestação'
+              title: 'Informações da Gestação',
             }}
           />
           <Stack.Screen
@@ -100,7 +96,7 @@ export default function AppNavigator() {
             component={QuestionnaireDumScreen}
             options={{
               headerShown: true,
-              title: 'Última Menstruação (DUM)'
+              title: 'Última Menstruação (DUM)',
             }}
           />
           <Stack.Screen
@@ -108,7 +104,7 @@ export default function AppNavigator() {
             component={QuestionnaireDppScreen}
             options={{
               headerShown: true,
-              title: 'Data Provável do Parto (DPP)'
+              title: 'Data Provável do Parto (DPP)',
             }}
           />
           <Stack.Screen
@@ -116,7 +112,7 @@ export default function AppNavigator() {
             component={QuestionnaireFirstPregnancyScreen}
             options={{
               headerShown: true,
-              title: 'Informações Adicionais'
+              title: 'Informações Adicionais',
             }}
           />
           <Stack.Screen
@@ -124,12 +120,24 @@ export default function AppNavigator() {
             component={QuestionnairePrenatalScreen}
             options={{
               headerShown: true,
-              title: 'Consulta Pré-Natal'
+              title: 'Consulta Pré-Natal',
             }}
           />
         </>
       ) : (
-        <Stack.Screen name="MainApp" component={MainApp} />
+        <>
+          <Stack.Screen name="MainApp" component={MainApp} />
+          
+          {/* 👇 2. ADICIONA A TELA "SOBRE" AQUI */}
+          <Stack.Screen 
+            name="AboutScreen" 
+            component={AboutScreen}
+            options={{ 
+              headerShown: true, // Para ter o botão "Voltar"
+              title: 'Sobre o App' // Título no topo
+            }} 
+          />
+        </>
       )}
     </Stack.Navigator>
   );

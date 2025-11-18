@@ -1,23 +1,27 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext'; // 👈 Importa o useAuth
 import { commonStyles, COLORS } from '../components/commonStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function QuestionnairePrenatalScreen({ navigation }) {
 
-
-    const { updateUserProfile, setUserToken } = useAuth();
+    // --- MUDANÇA AQUI ---
+    // Trocamos 'setUserToken' por 'completeOnboarding'
+    const { updateUserProfile, completeOnboarding } = useAuth();
 
     const handleSelection = (hasConsultation) => {
         updateUserProfile({ hasPrenatalConsultation: hasConsultation });
         
-        setUserToken('fake-token-prototipo'); 
+        // --- MUDANÇA AQUI ---
+        // Agora chamamos a função correta
+        completeOnboarding(); 
     };
 
     const handleSkip = () => {
-
-        setUserToken('fake-token-prototipo');
+        // --- MUDANÇA AQUI ---
+        // Agora chamamos a função correta
+        completeOnboarding();
     };
 
     return (

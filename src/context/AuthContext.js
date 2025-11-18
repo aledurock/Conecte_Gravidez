@@ -1,28 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Alert } from 'react-native'; // Importar Alert
 
 // --- DADOS DE EXEMPLO (MOCK) ---
 const DUMMY_SINTOMAS = [
-  {
-    id: '1',
-    data: '10/11/2025',
-    sintoma: 'Enjoo Matinal',
-    intensidade: 'moderado',
-    notas: 'Senti logo ao acordar, antes de comer.',
-    feedback: 'Isso é muito comum. Tente comer 2 bolachas de água e sal antes de se levantar da cama. Beba líquidos frios em pequenos goles.'
-  },
-  {
-    id: '2',
-    data: '08/11/2025',
-    sintoma: 'Dor nas Costas',
-    intensidade: 'intenso',
-    notas: 'Piorou no fim do dia, depois de ficar muito tempo sentada.',
-    feedback: 'Tente usar sapatos mais confortáveis e fazer pausas para se alongar. Uma bolsa de água morna na lombar por 15 minutos pode ajudar.'
-  }
+  // ... (seus sintomas)
 ];
-
 const INITIAL_APPOINTMENTS = [];
-
 // ---------------------------------
+
 export const AuthContext = createContext();
 
 export function useAuth() {
@@ -30,7 +15,6 @@ export function useAuth() {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [userToken, setUserToken] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +28,57 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Funções de Perfil/Login
+  // --- 🚀 FUNÇÕES DE LOGIN/CADASTRO 🚀 ---
+
+  // Função de Login
+  const signIn = async ({ email, password }) => {
+    try {
+      if (email.trim() !== '' && password.trim() !== '') {
+        console.log("Login simulado com sucesso:", email);
+        setUserToken('dummy-auth-token'); 
+        setUserProfile({ email: email, name: 'Usuário' }); 
+      } else {
+        throw new Error("Email ou senha inválidos.");
+      }
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Erro no Login", "Email ou senha inválidos.");
+      throw e;
+    }
+  };
+
+  // Função de Cadastro
+  const signUp = async ({ email, password }) => {
+    try {
+      if (email.trim() !== '' && password.trim() !== '') {
+        console.log("Cadastro simulado:", email);
+        setUserProfile({ email: email, name: 'Nova Mãe' }); 
+      } else {
+        throw new Error("Dados de cadastro inválidos.");
+      }
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Erro no Cadastro", "Não foi possível criar a conta.");
+      throw e; 
+    }
+  };
+
+  // Função de Sair (Logout)
+  const signOut = () => {
+    console.log("Usuário deslogado.");
+    setUserToken(null);
+    setUserProfile(null);
+  };
+  
+  // Função para completar o questionário e logar
+  const completeOnboarding = () => {
+    console.log("Questionário completado, logando usuário.");
+    setUserToken('dummy-auth-token'); // Define o token
+  };
+
+  // ----------------------------------------------------
+
+  // Funções de Perfil
   const updateUserProfile = (profileData) => {
     setUserProfile(prevProfile => ({
       ...prevProfile,
@@ -52,10 +86,7 @@ export const AuthProvider = ({ children }) => {
     }));
   };
 
-  // Renomeado para evitar conflito de escopo
-  const setUserToken_global = (token) => {
-    setUserToken(token);
-  };
+  // --- 🌟 FUNÇÕES DE SINTOMAS E AGENDA (PREENCHIDAS) 🌟 ---
 
   // Funções de Sintomas
   const addSintoma = (novoRelato) => {
@@ -67,7 +98,7 @@ export const AuthProvider = ({ children }) => {
       ...novoRelato,
       id: Date.now().toString(),
       data: `${dia}/${mes}/${ano}`,
-      feedback: null
+      feedback: null // Ou alguma lógica de feedback
     };
     setSintomas(listaAnterior => [sintomaCompleto, ...listaAnterior]);
   };
@@ -76,27 +107,33 @@ export const AuthProvider = ({ children }) => {
   const addAppointment = (novaConsulta) => {
     const consultaFormatada = {
       id: Date.now().toString(),
-      date: novaConsulta.date.toISOString().split('T')[0],
+      // Converte o objeto Data para string YYYY-MM-DD
+      date: novaConsulta.date.toISOString().split('T')[0], 
       title: novaConsulta.title,
       doctor: novaConsulta.doctor,
       time: novaConsulta.time,
       status: novaConsulta.status,
-      type: 'consulta'
+      type: 'consulta' // Define o tipo
     };
+    // Adiciona a nova consulta à lista
     setAppointments(prev => [...prev, consultaFormatada]);
+    console.log('Consulta Adicionada:', consultaFormatada);
   };
 
   // Adiciona um LEMBRETE
   const addReminder = (novoLembrete) => {
     const lembreteFormatado = {
       id: Date.now().toString(),
-      date: novoLembrete.date.toISOString().split('T')[0],
+      // Converte o objeto Data para string YYYY-MM-DD
+      date: novoLembrete.date.toISOString().split('T')[0], 
       title: novoLembrete.title,
       description: novoLembrete.description,
       time: novoLembrete.time,
-      type: 'lembrete'
+      type: 'lembrete' // Define o tipo
     };
+    // Adiciona o novo lembrete à lista
     setAppointments(prev => [...prev, lembreteFormatado]);
+    console.log('Lembrete Adicionado:', lembreteFormatado);
   };
 
   // Edita um LEMBRETE
@@ -117,7 +154,7 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
-  // Deleta QUALQUER item
+  // Deleta QUALQUER item (Lembrete ou Consulta)
   const deleteReminder = (id) => {
     setAppointments(prev => prev.filter(app => app.id !== id));
   };
@@ -133,15 +170,20 @@ export const AuthProvider = ({ children }) => {
       })
     );
   };
+  
+  // ----------------------------------------------------
 
   // Valor do contexto
   const value = {
-    user,
     userToken,
-    setUserToken: setUserToken_global,
     userProfile,
-    setUserProfile,
+    signIn,
+    signUp,
+    signOut,
+    completeOnboarding, 
     updateUserProfile,
+    
+    // Funções de Sintomas e Agenda (agora preenchidas)
     sintomas,
     addSintoma,
     appointments,
