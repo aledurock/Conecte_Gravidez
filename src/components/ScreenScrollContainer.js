@@ -16,7 +16,7 @@ const ScreenWrapper = ({ children, withScroll = true, style }) => {
         overScrollMode: "always",
         contentContainerStyle: { flexGrow: 1 } // Importante para conteúdo pequeno esticar
     } : {
-        style: { flex: 1 } // Se for View normal, ocupa tudo
+        style: { flex: 0 } // Se for View normal, ocupa tudo
     };
 
     return (

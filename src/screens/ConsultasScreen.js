@@ -26,15 +26,15 @@ const CONSULTA_TIPOS_LISTA = [
 const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 const shortDayNames = ["D", "S", "T", "Q", "Q", "S", "S"];
 
+// Componente de Status
 const StatusTag = ({ status }) => {
-    let corFundo, corTexto, texto;
+    let corFundo = '#eee', corTexto = '#333', texto = status;
     switch (status) {
         case 'finalizada': corFundo = '#E6F4EA'; corTexto = '#006422'; texto = 'Finalizada'; break;
         case 'andamento': corFundo = '#E6F0F8'; corTexto = '#00529B'; texto = 'Próxima'; break;
         case 'remarcada': corFundo = '#FFF4E6'; corTexto = '#B75500'; texto = 'Remarcada'; break;
-        case 'cancelada_medico': corFundo = '#FDEBEB'; corTexto = '#A30000'; texto = 'Cancelada (Doutor)'; break;
+        case 'cancelada_medico': corFundo = '#FDEBEB'; corTexto = '#A30000'; texto = 'Cancelada (Médico)'; break;
         case 'cancelada_usuario': corFundo = '#FDEBEB'; corTexto = '#A30000'; texto = 'Cancelada (Você)'; break;
-        default: return null;
     }
     return (
         <View style={[styles.statusTag, { backgroundColor: corFundo }]}>
@@ -45,26 +45,48 @@ const StatusTag = ({ status }) => {
 
 const ConsultasScreen = ({ navigation }) => {
     const { addAppointment, appointments, updateAppointmentStatus } = useAuth();
+    
     const [filteredConsultas, setFilteredConsultas] = useState([]);
-    const [isCancelModalVisible, setCancelModalVisible] = useState(false);
-    const [selectedConsulta, setSelectedConsulta] = useState(null);
-    const [cancelReason, setCancelReason] = useState('');
+    
+    // Modais
     const [isRequestModalVisible, setRequestModalVisible] = useState(false);
+    const [isCancelModalVisible, setCancelModalVisible] = useState(false);
+    
+    // Pickers
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const [isTimePickerVisible, setTimePickerVisible] = useState(false);
     const [isConsultaPickerVisible, setConsultaPickerVisible] = useState(false);
+    
+    // Estados de Seleção
+    const [selectedConsulta, setSelectedConsulta] = useState(null);
+    const [cancelReason, setCancelReason] = useState('');
+    
+    // Estados de Nova Consulta
     const [consultaTipo, setConsultaTipo] = useState(null);
     const [consultaTipoOutro, setConsultaTipoOutro] = useState('');
     const [consultaData, setConsultaData] = useState(new Date());
     const [consultaHora, setConsultaHora] = useState(null);
+    
+    // Calendário Auxiliar
     const [pickerDate, setPickerDate] = useState(new Date());
 
+    // Atualiza lista quando appointments muda
     useEffect(() => {
-        const f = appointments.filter(app => app.type === 'consulta' || app.type === 'exame');
-        f.sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Filtra apenas o que é consulta ou exame (ignora lembretes puros se houver)
+        // Se quiser mostrar tudo, remova o filter
+        const f = appointments.filter(app => !app.type || app.type === 'consulta' || app.type === 'exame');
+        
+        // Ordena por data
+        f.sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA - dateB;
+        });
+        
         setFilteredConsultas(f);
     }, [appointments]);
 
+    // --- Geração de Dados ---
     const generateTimeSlots = () => {
         const slots = [];
         for (let h = 7; h < 20; h++) {
@@ -92,40 +114,7 @@ const ConsultasScreen = ({ navigation }) => {
     };
     const miniCalendarDays = generateCalendar(pickerDate);
 
-    const changePickerMonth = (amount) => {
-        setPickerDate(prev => new Date(prev.getFullYear(), prev.getMonth() + amount, 1));
-    };
-
-    const handleDaySelect = (day) => {
-        const newDate = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), day);
-        setConsultaData(newDate);
-        setDatePickerVisible(false);
-    };
-
-    const handleTimeSelect = (time) => {
-        setConsultaHora(time);
-        setTimePickerVisible(false);
-    };
-
-    const handleConsultaTipoSelect = (tipo) => {
-        setConsultaTipo(tipo);
-        setConsultaPickerVisible(false);
-    };
-
-    const handleSelectOutro = () => {
-        setConsultaTipo('Outro');
-        setConsultaTipoOutro('');
-    };
-
-    const openRequestModal = () => {
-        setConsultaTipo(null);
-        setConsultaTipoOutro('');
-        setConsultaData(new Date());
-        setConsultaHora(null);
-        setPickerDate(new Date());
-        setRequestModalVisible(true);
-    };
-
+    // --- Handlers ---
     const handleRequestAppointment = () => {
         let tipoFinal = consultaTipo;
         if (consultaTipo === 'Outro') {
@@ -135,241 +124,262 @@ const ConsultasScreen = ({ navigation }) => {
             }
             tipoFinal = consultaTipoOutro.trim();
         }
+        
         if (!tipoFinal || !consultaData || !consultaHora) {
-            Alert.alert('Campos Incompletos', 'Por favor, selecione o tipo, a data e a hora desejados.');
+            Alert.alert('Campos Incompletos', 'Por favor, selecione o tipo, a data e a hora.');
             return;
         }
+        
         const novaConsulta = {
             title: tipoFinal,
-            date: consultaData,
+            date: consultaData, // O AuthContext vai converter pra string
             time: consultaHora,
             doctor: 'A confirmar', 
-            status: 'andamento'
+            status: 'andamento',
+            type: 'consulta'
         };
+        
         addAppointment(novaConsulta);
         setRequestModalVisible(false);
-        Alert.alert(
-            'Solicitação Enviada', 
-            `Sua consulta foi adicionada à sua agenda.\n\nTipo: ${tipoFinal}\nData: ${consultaData.toLocaleDateString('pt-BR')}\nHora: ${consultaHora}`
-        );
+        Alert.alert('Sucesso', 'Consulta adicionada à sua agenda!');
     };
     
-    const openCancelModal = (consulta) => {
-        setSelectedConsulta(consulta);
-        setCancelModalVisible(true);
-        setCancelReason('');
-    };
-
     const handleCancelAppointment = () => {
         if (!cancelReason) {
-            Alert.alert('Atenção', 'Por favor, selecione um motivo para o cancelamento.');
+            Alert.alert('Atenção', 'Selecione um motivo.');
             return;
         }
         updateAppointmentStatus(selectedConsulta.id, 'cancelada_usuario', cancelReason);
         setCancelModalVisible(false);
-        Alert.alert('Consulta Cancelada', 'A sua consulta foi cancelada com sucesso.');
     };
 
-    const renderConsultaItem = ({ item }) => (
-        <View style={styles.card}>
-            <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <StatusTag status={item.status} />
+    const openCancelModal = (consulta) => {
+        setSelectedConsulta(consulta);
+        setCancelReason('');
+        setCancelModalVisible(true);
+    };
+    
+    const openRequestModal = () => {
+        setConsultaTipo(null);
+        setConsultaTipoOutro('');
+        setConsultaData(new Date());
+        setConsultaHora(null);
+        setPickerDate(new Date());
+        setRequestModalVisible(true);
+    };
+
+    // --- Renderizadores ---
+    const renderConsultaItem = ({ item }) => {
+        // Tratamento de data seguro para evitar tela branca
+        let dateDisplay = 'Data inválida';
+        try {
+            // Tenta criar data se vier como string YYYY-MM-DD
+            const dateObj = new Date(item.date + 'T00:00:00'); 
+            if (!isNaN(dateObj.getTime())) {
+                dateDisplay = dateObj.toLocaleDateString('pt-BR');
+            } else {
+                // Fallback
+                dateDisplay = item.date; 
+            }
+        } catch (e) { dateDisplay = item.date }
+
+        return (
+            <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>{item.title}</Text>
+                    <StatusTag status={item.status} />
+                </View>
+                <View style={styles.cardBody}>
+                    <Text style={styles.cardText}><Ionicons name="calendar-outline" size={16} /> {dateDisplay}</Text>
+                    <Text style={styles.cardText}><Ionicons name="time-outline" size={16} /> {item.time}</Text>
+                    <Text style={styles.cardText}><Ionicons name="medkit-outline" size={16} /> {item.doctor}</Text>
+                    
+                    {item.status === 'cancelada_usuario' && (
+                        <Text style={styles.cardInfoText}>Motivo: {item.motivoCancelamento}</Text>
+                    )}
+                </View>
+                
+                {item.status === 'andamento' && (
+                    <TouchableOpacity style={styles.cancelButton} onPress={() => openCancelModal(item)}>
+                        <Text style={styles.cancelButtonText}>Cancelar Consulta</Text>
+                    </TouchableOpacity>
+                )}
             </View>
-            <View style={styles.cardBody}>
-                <Text style={styles.cardText}><Ionicons name="calendar-outline" size={16} /> {new Date(item.date + 'T00:00:00').toLocaleDateString('pt-BR')}</Text>
-                <Text style={styles.cardText}><Ionicons name="medkit-outline" size={16} /> {item.doctor}</Text>
-                {item.status === 'remarcada' && (<Text style={styles.cardInfoText}>Data original: {item.dataOriginal}</Text>)}
-                {item.status === 'cancelada_medico' && (<Text style={styles.cardInfoText}>Motivo: {item.motivoCancelamento}</Text>)}
-            </View>
-            {item.status === 'andamento' && (
-                <TouchableOpacity style={styles.cancelButton} onPress={() => openCancelModal(item)}>
-                    <Text style={styles.cancelButtonText}>Cancelar Consulta</Text>
-                </TouchableOpacity>
-            )}
-        </View>
-    );
+        );
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="light-content" />
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+            
+            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color={COLORS.white} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Minhas Consultas</Text>
             </View>
+            
+            {/* Lista */}
             <FlatList
                 data={filteredConsultas}
                 renderItem={renderConsultaItem}
                 keyExtractor={(item) => item.id}
                 style={styles.list}
-                ListHeaderComponent={
-                    <TouchableOpacity style={styles.requestButton} onPress={openRequestModal}>
-                        <Ionicons name="add-circle-outline" size={20} color={COLORS.white} />
-                        <Text style={styles.requestButtonText}>Solicitar Nova Consulta</Text>
-                    </TouchableOpacity>
-                }
-                ListEmptyComponent={() => (<Text style={styles.emptyText}>Nenhuma consulta encontrada.</Text>)}
+                contentContainerStyle={{ paddingBottom: 80 }}
+                ListEmptyComponent={() => (
+                    <View style={{ alignItems: 'center', marginTop: 50 }}>
+                        <Ionicons name="calendar-outline" size={50} color="#ccc" />
+                        <Text style={styles.emptyText}>Nenhuma consulta agendada.</Text>
+                    </View>
+                )}
             />
-            {/* Modal de Solicitar Consulta */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={isRequestModalVisible}
-                onRequestClose={() => setRequestModalVisible(false)}
-            >
+            
+            {/* FAB (Botão Flutuante) */}
+            <TouchableOpacity style={styles.fab} onPress={openRequestModal}>
+                <Ionicons name="add" size={32} color={COLORS.white} />
+            </TouchableOpacity>
+
+            {/* --- MODAIS --- */}
+            
+            {/* Modal Solicitar */}
+            <Modal animationType="slide" transparent={true} visible={isRequestModalVisible} onRequestClose={() => setRequestModalVisible(false)}>
                 <View style={styles.modalBackdrop}>
                     <ScrollView style={styles.modalScrollView} contentContainerStyle={styles.modalScrollContent}>
                         <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Solicitar Consulta</Text>
-                            <Text style={styles.label}>1. Tipo de Consulta</Text>
-                            <TouchableOpacity 
-                                style={styles.datePickerButton} 
-                                onPress={() => setConsultaPickerVisible(true)}
-                            >
-                                <Ionicons name="list-outline" size={20} color={COLORS.primary} />
-                                <Text 
-                                    style={[
-                                        styles.datePickerButtonText,
-                                        (consultaTipo === 'Outro' || !consultaTipo) && { color: '#999' }
-                                    ]}
-                                >
-                                    {consultaTipo && consultaTipo !== 'Outro' ? consultaTipo : 'Consultas Disponíveis'}
+                            <Text style={styles.modalTitle}>Nova Consulta</Text>
+                            
+                            <Text style={styles.label}>Tipo</Text>
+                            <TouchableOpacity style={styles.inputButton} onPress={() => setConsultaPickerVisible(true)}>
+                                <Text style={{ color: consultaTipo ? COLORS.text : '#999' }}>
+                                    {consultaTipo || 'Selecione o tipo'}
                                 </Text>
+                                <Ionicons name="chevron-down" size={20} color="#999" />
                             </TouchableOpacity>
-                            <TouchableOpacity 
-                                style={[styles.reasonButton, consultaTipo === 'Outro' && styles.reasonButtonSelected]}
-                                onPress={handleSelectOutro}
-                            >
-                                <Text style={[styles.reasonText, consultaTipo === 'Outro' && styles.reasonTextSelected]}>Outro</Text>
-                            </TouchableOpacity>
+                            
                             {consultaTipo === 'Outro' && (
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="Descreva a consulta desejada"
-                                    placeholderTextColor="#999"
+                                    placeholder="Descreva a consulta"
                                     value={consultaTipoOutro}
                                     onChangeText={setConsultaTipoOutro}
                                 />
                             )}
-                            <Text style={styles.label}>2. Data e Hora de Preferência</Text>
-                            <TouchableOpacity 
-                                style={styles.datePickerButton} 
-                                onPress={() => setDatePickerVisible(true)}
-                            >
-                                <Ionicons name="calendar-outline" size={20} color={COLORS.primary} />
-                                <Text style={styles.datePickerButtonText}>
-                                    {consultaData.toLocaleDateString('pt-BR')}
-                                </Text>
+                            
+                            <Text style={styles.label}>Data</Text>
+                            <TouchableOpacity style={styles.inputButton} onPress={() => setDatePickerVisible(true)}>
+                                <Text>{consultaData.toLocaleDateString('pt-BR')}</Text>
+                                <Ionicons name="calendar" size={20} color={COLORS.primary} />
                             </TouchableOpacity>
-                            <TouchableOpacity 
-                                style={styles.datePickerButton} 
-                                onPress={() => setTimePickerVisible(true)}
-                            >
-                                <Ionicons name="time-outline" size={20} color={COLORS.primary} />
-                                <Text style={[styles.datePickerButtonText, !consultaHora && { color: '#999' }]}>
-                                    {consultaHora || 'Selecionar horário'}
-                                </Text>
+
+                            <Text style={styles.label}>Hora</Text>
+                            <TouchableOpacity style={styles.inputButton} onPress={() => setTimePickerVisible(true)}>
+                                <Text>{consultaHora || 'Selecione a hora'}</Text>
+                                <Ionicons name="time" size={20} color={COLORS.primary} />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.modalButtonPrimary} onPress={handleRequestAppointment}>
-                                <Text style={styles.modalButtonText}>Enviar Solicitação</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setRequestModalVisible(false)}>
-                                <Text style={styles.modalButtonTextSecondary}>Voltar</Text>
-                            </TouchableOpacity>
+
+                            <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#ddd', marginRight: 10 }]} onPress={() => setRequestModalVisible(false)}>
+                                    <Text style={{ color: '#333' }}>Cancelar</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: COLORS.primary }]} onPress={handleRequestAppointment}>
+                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Salvar</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </ScrollView>
                 </View>
             </Modal>
 
-            {/* Modal de Cancelar Consulta */}
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={isCancelModalVisible}
-                onRequestClose={() => setCancelModalVisible(false)}
-            >
-                <View style={styles.modalBackdrop}>
+            {/* Modal DatePicker Customizado */}
+            <Modal transparent={true} visible={isDatePickerVisible} animationType="fade" onRequestClose={() => setDatePickerVisible(false)}>
+                <TouchableOpacity style={styles.pickerOverlay} onPress={() => setDatePickerVisible(false)}>
+                    <View style={styles.miniCalendarContainer} onStartShouldSetResponder={() => true}>
+                        <View style={styles.miniCalendarHeader}>
+                             <TouchableOpacity onPress={() => setPickerDate(new Date(pickerDate.setMonth(pickerDate.getMonth() - 1)))}>
+                                <Ionicons name="chevron-back" size={24} color={COLORS.primary} />
+                             </TouchableOpacity>
+                             <Text style={styles.miniCalendarMonthText}>{monthNames[pickerDate.getMonth()]} {pickerDate.getFullYear()}</Text>
+                             <TouchableOpacity onPress={() => setPickerDate(new Date(pickerDate.setMonth(pickerDate.getMonth() + 1)))}>
+                                <Ionicons name="chevron-forward" size={24} color={COLORS.primary} />
+                             </TouchableOpacity>
+                        </View>
+                        <View style={styles.miniCalendarDaysGrid}>
+                             {miniCalendarDays.map((d, i) => (
+                                 <TouchableOpacity 
+                                    key={i} 
+                                    style={[styles.miniCalendarDay, d.day === '' && { backgroundColor: 'transparent' }]} 
+                                    disabled={d.day === ''}
+                                    onPress={() => {
+                                        const newDate = new Date(pickerDate.getFullYear(), pickerDate.getMonth(), d.day);
+                                        setConsultaData(newDate);
+                                        setDatePickerVisible(false);
+                                    }}
+                                 >
+                                     <Text style={styles.miniCalendarDayText}>{d.day}</Text>
+                                 </TouchableOpacity>
+                             ))}
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
+
+            {/* Modal TimePicker */}
+            <Modal transparent={true} visible={isTimePickerVisible} animationType="fade" onRequestClose={() => setTimePickerVisible(false)}>
+                 <TouchableOpacity style={styles.pickerOverlay} onPress={() => setTimePickerVisible(false)}>
+                     <View style={styles.timePickerContainer}>
+                         <FlatList 
+                             data={timeSlots}
+                             keyExtractor={item => item}
+                             renderItem={({ item }) => (
+                                 <TouchableOpacity style={styles.timeSlot} onPress={() => { setConsultaHora(item); setTimePickerVisible(false); }}>
+                                     <Text style={styles.timeSlotText}>{item}</Text>
+                                 </TouchableOpacity>
+                             )}
+                         />
+                     </View>
+                 </TouchableOpacity>
+            </Modal>
+
+             {/* Modal Tipo Consulta */}
+             <Modal transparent={true} visible={isConsultaPickerVisible} animationType="fade" onRequestClose={() => setConsultaPickerVisible(false)}>
+                 <TouchableOpacity style={styles.pickerOverlay} onPress={() => setConsultaPickerVisible(false)}>
+                     <View style={styles.timePickerContainer}>
+                         <FlatList 
+                             data={[...CONSULTA_TIPOS_LISTA, 'Outro']}
+                             keyExtractor={item => item}
+                             renderItem={({ item }) => (
+                                 <TouchableOpacity style={styles.timeSlot} onPress={() => { 
+                                     setConsultaTipo(item); 
+                                     if(item !== 'Outro') setConsultaTipoOutro('');
+                                     setConsultaPickerVisible(false); 
+                                  }}>
+                                     <Text style={styles.timeSlotText}>{item}</Text>
+                                 </TouchableOpacity>
+                             )}
+                         />
+                     </View>
+                 </TouchableOpacity>
+            </Modal>
+            
+            {/* Modal Cancelar */}
+            <Modal transparent={true} visible={isCancelModalVisible} animationType="fade" onRequestClose={() => setCancelModalVisible(false)}>
+                <TouchableOpacity style={styles.pickerOverlay} onPress={() => setCancelModalVisible(false)} activeOpacity={1}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Cancelar Consulta</Text>
-                        <Text style={styles.modalSubtitle}>Consulta: {selectedConsulta?.title}</Text>
-                        <Text style={styles.modalSubtitle}>Data: {selectedConsulta?.date ? new Date(selectedConsulta.date + 'T00:00:00').toLocaleDateString('pt-BR') : ''}</Text>
-                        <Text style={styles.label}>Por favor, informe o motivo:</Text>
-                        {['Conflito de agenda', 'Emergência pessoal', 'Outro'].map((reason) => (
-                            <TouchableOpacity 
-                                key={reason}
-                                style={[styles.reasonButton, cancelReason === reason && styles.reasonButtonSelected]}
-                                onPress={() => setCancelReason(reason)}
-                            >
-                                <Text style={[styles.reasonText, cancelReason === reason && styles.reasonTextSelected]}>{reason}</Text>
+                        <Text style={[styles.modalTitle, { color: '#D32F2F' }]}>Cancelar Consulta?</Text>
+                        <Text style={{ marginBottom: 15 }}>Selecione o motivo:</Text>
+                        {['Imprevisto', 'Melhora dos sintomas', 'Outro'].map(reason => (
+                            <TouchableOpacity key={reason} onPress={() => setCancelReason(reason)} style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name={cancelReason === reason ? "radio-button-on" : "radio-button-off"} size={20} color={COLORS.primary} />
+                                <Text style={{ marginLeft: 10 }}>{reason}</Text>
                             </TouchableOpacity>
                         ))}
-                        <TouchableOpacity style={styles.modalButtonDanger} onPress={handleCancelAppointment}>
-                            <Text style={styles.modalButtonText}>Confirmar Cancelamento</Text>
+                        <TouchableOpacity 
+                            style={[styles.modalButton, { backgroundColor: '#D32F2F', marginTop: 20 }]} 
+                            onPress={handleCancelAppointment}
+                        >
+                            <Text style={{ color: 'white', fontWeight: 'bold' }}>Confirmar Cancelamento</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setCancelModalVisible(false)}>
-                            <Text style={styles.modalButtonTextSecondary}>Voltar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-
-            {/* Modal de DatePicker */}
-            <Modal transparent={true} visible={isDatePickerVisible} animationType="fade">
-                <TouchableOpacity style={styles.pickerOverlay} onPress={() => setDatePickerVisible(false)}>
-                    <TouchableOpacity activeOpacity={1}>
-                        <View style={styles.miniCalendarContainer}>
-                            <View style={styles.miniCalendarHeader}>
-                                <TouchableOpacity onPress={() => changePickerMonth(-1)}><Ionicons name="chevron-back" size={24} color={COLORS.primary} /></TouchableOpacity>
-                                <Text style={styles.miniCalendarMonthText}>{`${monthNames[pickerDate.getMonth()]} de ${pickerDate.getFullYear()}`}</Text>
-                                <TouchableOpacity onPress={() => changePickerMonth(1)}><Ionicons name="chevron-forward" size={24} color={COLORS.primary} /></TouchableOpacity>
-                            </View>
-                            <View style={styles.miniCalendarWeekDays}>{shortDayNames.map((day, index) => <Text key={index} style={styles.miniCalendarWeekDayText}>{day}</Text>)}</View>
-                            <View style={styles.miniCalendarDaysGrid}>
-                                {miniCalendarDays.map(d => (
-                                    <TouchableOpacity key={d.key} style={styles.miniCalendarDayContainer} onPress={() => d.day && handleDaySelect(d.day)}>
-                                        <View style={[styles.miniCalendarDay, d.day === consultaData.getDate() && pickerDate.getMonth() === consultaData.getMonth() && styles.selectedDay]}>
-                                            <Text style={[styles.miniCalendarDayText, d.day === consultaData.getDate() && pickerDate.getMonth() === consultaData.getMonth() && styles.selectedDayText]}>{d.day}</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </TouchableOpacity>
-            </Modal>
-
-            {/* Modal de TimePicker */}
-            <Modal transparent={true} visible={isTimePickerVisible} animationType="fade">
-                <TouchableOpacity style={styles.pickerOverlay} onPress={() => setTimePickerVisible(false)}>
-                    <View style={styles.timePickerContainer}>
-                        <FlatList 
-                            data={timeSlots} 
-                            keyExtractor={item => item} 
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => handleTimeSelect(item)}>
-                                    <Text style={[styles.timeSlotText, consultaHora === item && styles.timeSlotTextSelected]}>{item}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
-                    </View>
-                </TouchableOpacity>
-            </Modal>
-
-            {/* Modal de Lista de Consultas */}
-            <Modal transparent={true} visible={isConsultaPickerVisible} animationType="fade">
-                <TouchableOpacity style={styles.pickerOverlay} onPress={() => setConsultaPickerVisible(false)}>
-                    <View style={styles.timePickerContainer}>
-                        <FlatList 
-                            data={CONSULTA_TIPOS_LISTA}
-                            keyExtractor={item => item}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => handleConsultaTipoSelect(item)}>
-                                    <Text style={[styles.timeSlotText, consultaTipo === item && styles.timeSlotTextSelected]}>{item}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
                     </View>
                 </TouchableOpacity>
             </Modal>
@@ -380,87 +390,50 @@ const ConsultasScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: COLORS.lightGray },
-    header: { backgroundColor: COLORS.primary, paddingHorizontal: 15, paddingTop: 30, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
+    header: { backgroundColor: COLORS.primary, paddingHorizontal: 15, paddingTop: 20, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
     backButton: { padding: 5, marginRight: 15 },
     headerTitle: { color: COLORS.white, fontSize: 20, fontWeight: 'bold' },
     list: { flex: 1 },
-    requestButton: { backgroundColor: COLORS.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 18, margin: 20, borderRadius: 10, elevation: 4, shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } },
-    requestButtonText: { color: COLORS.white, fontSize: 16, fontWeight: 'bold', marginLeft: 10 },
-    emptyText: { textAlign: 'center', marginTop: 50, fontSize: 16, color: '#777' },
-    card: { backgroundColor: COLORS.white, borderRadius: 15, padding: 20, marginHorizontal: 20, marginBottom: 15, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 5, elevation: 4 },
-    cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-    cardTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.text, flex: 1, marginRight: 10 },
+    emptyText: { color: '#888', marginTop: 10, fontSize: 16 },
+    
+    // Cards
+    card: { backgroundColor: COLORS.white, borderRadius: 12, padding: 15, marginHorizontal: 20, marginBottom: 15, elevation: 3 },
+    cardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+    cardTitle: { fontSize: 16, fontWeight: 'bold', color: COLORS.text, flex: 1 },
     cardBody: { marginBottom: 10 },
-    cardText: { fontSize: 15, color: '#555', lineHeight: 22 },
-    cardInfoText: { fontSize: 14, color: '#A30000', fontStyle: 'italic', marginTop: 5 },
-    statusTag: { paddingVertical: 5, paddingHorizontal: 10, borderRadius: 20 },
-    statusTagText: { fontSize: 12, fontWeight: 'bold' },
-    cancelButton: { backgroundColor: '#FDEBEB', paddingVertical: 10, borderRadius: 8, alignItems: 'center', marginTop: 10 },
-    cancelButtonText: { color: '#A30000', fontWeight: 'bold', fontSize: 14 },
-    modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-    modalScrollView: { width: '100%', flexGrow: 0 },
-    modalScrollContent: { justifyContent: 'center', paddingVertical: 20 }, 
-    modalContent: { backgroundColor: COLORS.white, borderRadius: 15, padding: 25, width: '100%', elevation: 10 },
-    modalTitle: { fontSize: 20, fontWeight: 'bold', color: COLORS.primary, textAlign: 'center', marginBottom: 10 },
-    modalSubtitle: { fontSize: 16, color: COLORS.text, textAlign: 'center', marginBottom: 20 },
-    label: { fontSize: 15, fontWeight: '600', color: COLORS.text, marginBottom: 10, marginTop: 10 },
-    input: { backgroundColor: COLORS.lightGray, borderRadius: 10, padding: 15, fontSize: 16, color: COLORS.text, borderWidth: 1, borderColor: '#E0E0E0', marginBottom: 15, marginTop: 5 },
-    modalButtonPrimary:{ backgroundColor :COLORS.primary ,padding :15,borderRadius :10 ,alignItems :'center',marginTop :15},
-    modalButtonDanger:{ backgroundColor :'#A30000',padding :15,borderRadius :10 ,alignItems :'center',marginTop :15},
-    modalButtonText:{ color :COLORS.white ,fontSize :16,fontWeight :'bold'},
-    modalButtonSecondary:{ backgroundColor :'transparent',padding :15,borderRadius :10 ,alignItems :'center',marginTop :5},
-    modalButtonTextSecondary:{ color :COLORS.primary ,fontSize :16,fontWeight :'bold'},
-    reasonButton:{ backgroundColor :COLORS.lightGray ,padding :12,borderRadius :8 ,borderWidth :1 ,borderColor :'#E0E0E0',marginBottom :10},
-    reasonButtonSelected:{ backgroundColor :'#E6F0F8',borderColor :COLORS.primary},
-    reasonText:{ color :COLORS.text ,textAlign :'center',fontSize :15,fontWeight :'500'},
-    reasonTextSelected:{ color :COLORS.primary ,fontWeight :'bold'},
-    datePickerButton:{
-        flexDirection:'row',
-        alignItems:'center',
-        backgroundColor :COLORS.white,
-        borderWidth :1,
-        borderColor :'#E0E0E0',
-        padding :15,
-        borderRadius :10,
-        marginBottom :15
-    },
-    datePickerButtonText:{
-        fontSize :16,
-        color :COLORS.text,
-        marginLeft :10
-    },
-    pickerOverlay:{ flex :1 ,justifyContent :'center',alignItems :'center' ,backgroundColor :'rgba(0,0,0,0.5)' },
-    miniCalendarContainer:{ backgroundColor :'white' ,padding :15 ,borderRadius :10 ,width :'90%' ,elevation :20 },
-    miniCalendarHeader:{ flexDirection :'row' ,justifyContent :'space-between' ,alignItems :'center' ,marginBottom :10 },
-    miniCalendarMonthText:{ fontWeight :'bold' ,fontSize :16 ,color :COLORS.primary},
-    miniCalendarWeekDays:{ flexDirection :'row' ,justifyContent :'space-around' ,marginBottom :5},
-    miniCalendarWeekDayText:{ fontSize :12 ,color :COLORS.gray ,fontWeight :'bold' ,width :'14.2%' ,textAlign :'center'},
-    miniCalendarDaysGrid:{ flexDirection :'row' ,flexWrap :'wrap'},
-    miniCalendarDayContainer:{ width :'14.2%' ,justifyContent :'center' ,alignItems :'center' ,height :35},
-    miniCalendarDay:{ width :30 ,height :30 ,justifyContent :'center' ,alignItems :'center' ,borderRadius :15},
-    miniCalendarDayText:{ fontSize :14 ,color :COLORS.text},
-    selectedDay:{ backgroundColor :COLORS.primary},
-    selectedDayText:{ color :COLORS.white ,fontWeight :'bold'},
-    timePickerContainer:{
-        backgroundColor:'white',
-        padding :10,
-        borderRadius :10,
-        width:'80%',
-        maxHeight :350
-    },
-    timeSlotText:{
-        fontSize :16,
-        paddingVertical :14,
-        textAlign:'center',
-        color :COLORS.text
-    },
-    timeSlotTextSelected:{
-        fontSize :16,
-        paddingVertical :14,
-        textAlign:'center',
-        color :COLORS.primary,
-        fontWeight:'bold'
-    }
+    cardText: { fontSize: 14, color: '#555', marginBottom: 4 },
+    cardInfoText: { fontSize: 12, color: '#D32F2F', fontStyle: 'italic' },
+    
+    statusTag: { paddingVertical: 4, paddingHorizontal: 8, borderRadius: 12 },
+    statusTagText: { fontSize: 10, fontWeight: 'bold' },
+    
+    cancelButton: { alignSelf: 'flex-start', paddingVertical: 5 },
+    cancelButtonText: { color: '#D32F2F', fontSize: 12, fontWeight: '600' },
+
+    // FAB
+    fab: { position: 'absolute', bottom: 25, right: 25, width: 56, height: 56, borderRadius: 28, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center', elevation: 6 },
+    
+    // Modais
+    modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+    modalContent: { backgroundColor: 'white', borderRadius: 15, padding: 20, width: '90%' },
+    modalTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.primary, marginBottom: 15, textAlign: 'center' },
+    label: { fontSize: 14, color: '#666', marginBottom: 5, marginTop: 10 },
+    inputButton: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, backgroundColor: '#f9f9f9' },
+    input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, backgroundColor: '#f9f9f9', fontSize: 16 },
+    modalButton: { padding: 15, borderRadius: 8, alignItems: 'center', flex: 1, justifyContent: 'center' },
+    
+    // Pickers
+    pickerOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
+    miniCalendarContainer: { backgroundColor: 'white', width: '85%', borderRadius: 15, padding: 15, elevation: 5 },
+    miniCalendarHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, alignItems: 'center' },
+    miniCalendarMonthText: { fontSize: 16, fontWeight: 'bold', color: COLORS.primary },
+    miniCalendarDaysGrid: { flexDirection: 'row', flexWrap: 'wrap' },
+    miniCalendarDay: { width: '14.2%', height: 35, justifyContent: 'center', alignItems: 'center' },
+    miniCalendarDayText: { color: '#333' },
+    
+    timePickerContainer: { backgroundColor: 'white', width: '70%', maxHeight: 300, borderRadius: 10 },
+    timeSlot: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee', alignItems: 'center' },
+    timeSlotText: { fontSize: 16, color: '#333' }
 });
 
 export default ConsultasScreen;

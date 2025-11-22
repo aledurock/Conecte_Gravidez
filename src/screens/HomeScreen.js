@@ -8,15 +8,17 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
+// Imports
 import { useAuth } from '../context/AuthContext';
 import { calculateGestationDetails } from '../utils/gestationCalculator';
 import { BABY_SIZES } from '../constants/babyData';
 import { DAILY_TIPS } from '../constants/dailyTips';
-// Supondo que você tenha esse arquivo de estilos comuns
-import { commonStyles, COLORS } from '../components/commonStyles'; 
-import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS } from '../components/commonStyles';
 
+// Mapa de Imagens
 const fruitImages = {
   'semente.png': require('../../assets/images/niveis_bebe/semente.png'),
   'azeitona.png': require('../../assets/images/niveis_bebe/azeitona.png'),
@@ -34,129 +36,117 @@ const HomeScreen = ({ navigation }) => {
   const [dailyTip, setDailyTip] = useState('');
 
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * DAILY_TIPS.length);
-    setDailyTip(DAILY_TIPS[randomIndex]);
+    if (DAILY_TIPS && DAILY_TIPS.length > 0) {
+      setDailyTip(DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)]);
+    }
   }, []);
 
-  const displayName = userProfile?.name || 'Usuário';
-  const gestationInfo = calculateGestationDetails(userProfile);
+  const displayName = userProfile?.name || 'Nova Mãe';
+
+  let gestationInfo = null;
+  if (userProfile?.currentWeek) {
+     gestationInfo = { 
+        currentWeek: userProfile.currentWeek, 
+        daysRemaining: userProfile.daysRemaining 
+     };
+  } else {
+     gestationInfo = calculateGestationDetails(userProfile);
+  }
 
   let babySizeInfo = null;
   if (gestationInfo) {
-    const possibleSizes = BABY_SIZES.filter(
-      item => item.week <= gestationInfo.currentWeek
-    );
+    const currentWeek = gestationInfo.currentWeek;
+    const possibleSizes = BABY_SIZES.filter(item => item.week <= currentWeek);
+    
     if (possibleSizes.length > 0) {
       babySizeInfo = possibleSizes[possibleSizes.length - 1];
+    } else {
+      babySizeInfo = BABY_SIZES[0];
     }
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="never"
-        bounces={true}
-        overScrollMode="always"
-      >
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
+        
+        {/* HEADER */}
         <View style={styles.header}>
-          <Ionicons
-            name="person-circle-outline"
-            size={32}
-            color={COLORS.white}
-          />
-          <View>
-            <Text style={styles.headerText}>Olá, {displayName}!</Text>
-            {gestationInfo && (
-              <Text style={styles.headerSubtext}>
-                Semana {gestationInfo.currentWeek} da sua jornada
-              </Text>
-            )}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="person-circle-outline" size={45} color={COLORS.white} />
+            <View style={{ marginLeft: 12 }}>
+              <Text style={styles.headerText}>Olá, {displayName}!</Text>
+              {gestationInfo ? (
+                 <Text style={styles.headerSubtext}>Semana {gestationInfo.currentWeek} da sua jornada</Text>
+              ) : (
+                 <Text style={styles.headerSubtext}>Bem-vinda!</Text>
+              )}
+            </View>
           </View>
         </View>
 
         <View style={styles.contentContainer}>
+          
+          {/* CARD PRINCIPAL */}
           {gestationInfo && babySizeInfo ? (
             <View style={styles.mainCard}>
-              <Image
-                source={fruitImages[babySizeInfo.image]}
-                style={styles.fruitImage}
-              />
+              <View style={styles.imageContainer}>
+                 {fruitImages[babySizeInfo.image] ? (
+                    <Image
+                      source={fruitImages[babySizeInfo.image]}
+                      style={styles.fruitImage}
+                    />
+                 ) : (
+                    <View style={{ width: '100%', height: '100%', backgroundColor: '#eee' }} />
+                 )}
+              </View>
+              
               <View style={styles.mainCardContent}>
-                <Text style={styles.mainCardText}>
-                  Seu bebê tem o tamanho de um{' '}
-                  <Text style={{ fontWeight: 'bold' }}>
-                    {babySizeInfo.size
-                      .replace('uma ', '')
-                      .replace('um ', '')}
-                  </Text>
+                <Text style={styles.mainCardTitle}>Seu bebê tem o tamanho de:</Text>
+                <Text style={styles.fruitName}>
+                   {babySizeInfo.size.replace(/^(uma?)\s/, '')}
                 </Text>
                 <Text style={styles.countdownText}>
-                  Faltam aproximadamente {gestationInfo.daysRemaining} dias
-                  para o grande encontro!
+                  Faltam aproximadamente {gestationInfo.daysRemaining} dias para o grande encontro!
                 </Text>
               </View>
             </View>
           ) : (
-            <View
-              style={[
-                styles.mainCard,
-                { paddingVertical: 30, alignItems: 'center' },
-              ]}
-            >
-              <Text style={[styles.mainCardText, { textAlign: 'center' }]}>
-                Complete seu perfil
-              </Text>
-              <Text
-                style={[
-                  styles.countdownText,
-                  { textAlign: 'center', marginTop: 8 },
-                ]}
-              >
-                Para iniciar o acompanhamento da sua gestação.
-              </Text>
+            <View style={[styles.mainCard, { justifyContent: 'center', paddingVertical: 30 }]}>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={styles.mainCardTitle}>Complete seu perfil</Text>
+                <Text style={[styles.countdownText, { textAlign: 'center', marginTop: 5 }]}>
+                  Para ver o desenvolvimento do bebê.
+                </Text>
+              </View>
             </View>
           )}
 
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('Consultas')}
-            >
-              <Text style={styles.actionButtonText}>Consultas</Text>
+          {/* BOTÕES */}
+          <View style={styles.gridContainer}>
+            <TouchableOpacity style={styles.gridButton} onPress={() => navigation.navigate('Consultas')}>
+              <Text style={styles.gridButtonText}>Consultas</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('RelatosSintomas')}
-            >
-              <Text style={styles.actionButtonText}>Relatar Sintomas</Text>
+            <TouchableOpacity style={styles.gridButton} onPress={() => navigation.navigate('RelatosSintomas')}>
+              <Text style={styles.gridButtonText}>Relatar Sintomas</Text>
             </TouchableOpacity>
-          </View>
-
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('HistoricoSintomas')}
-            >
-              <Text style={styles.actionButtonText}>
-                Histórico de Sintomas
-              </Text>
+            <TouchableOpacity style={styles.gridButton} onPress={() => navigation.navigate('HistoricoSintomas')}>
+              <Text style={styles.gridButtonText}>Histórico</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => navigation.navigate('Mais')}
-            >
-              <Text style={styles.actionButtonText}>Mais...</Text>
+            <TouchableOpacity style={styles.gridButton} onPress={() => navigation.navigate('Mais')}>
+              <Text style={styles.gridButtonText}>Mais...</Text>
             </TouchableOpacity>
           </View>
 
+          {/* DICA */}
           <View style={styles.tipCard}>
-            <Text style={styles.tipTitle}>Dica do Dia</Text>
-            <Text style={styles.tipText}>{dailyTip}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+              <Ionicons name="bulb-outline" size={24} color={COLORS.primary} />
+              <Text style={styles.tipTitle}> Dica do Dia</Text>
+            </View>
+            <Text style={styles.tipText}>{dailyTip || "Hidrate-se bem hoje!"}</Text>
           </View>
+
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -164,115 +154,31 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.lightGray,
+  safeArea: { flex: 1, backgroundColor: COLORS.lightGray },
+  header: { backgroundColor: COLORS.primary, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 30, borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
+  headerText: { color: COLORS.white, fontSize: 20, fontWeight: 'bold' },
+  headerSubtext: { color: '#ffffffff', fontSize: 14, fontWeight: '600', marginTop: 2 },
+  
+  contentContainer: { 
+    paddingHorizontal: 20, 
+    // AQUI ESTÁ A MUDANÇA: Mudei de -30 para 15.
+    // Isso empurra o conteúdo para baixo, saindo de cima do azul.
+    marginTop: 25 
   },
-  header: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 25,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerText: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 15,
-    alignItems: 'center',
-  },
-  headerSubtext: {
-    color: COLORS.white,
-    fontSize: 15,
-    marginLeft: 15,
-  },
-  contentContainer: {
-    paddingHorizontal: 25,
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
-  mainCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: 15,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  mainCardContent: {
-    flex: 1,
-    marginLeft: 15,
-  },
-  fruitImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-  },
-  mainCardText: {
-    fontSize: 20,
-    color: COLORS.text,
-    lineHeight: 28,
-  },
-  countdownText: {
-    fontSize: 15,
-    color: '#5B7DB1',
-    fontWeight: '500',
-    marginTop: 8,
-  },
-  actionButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  actionButton: {
-    backgroundColor: COLORS.white,
-    width: '48%',
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  actionButtonText: {
-    color: COLORS.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  tipCard: {
-    backgroundColor: COLORS.white,
-    marginTop: 20,
-    borderRadius: 15,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  tipTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.primary,
-    marginBottom: 10,
-  },
-  tipText: {
-    fontSize: 16,
-    color: COLORS.text,
-    lineHeight: 24,
-  },
+  
+  mainCard: { backgroundColor: COLORS.white, borderRadius: 20, padding: 20, flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5, marginBottom: 25 },
+  imageContainer: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#F0F0F0', justifyContent: 'center', alignItems: 'center', marginRight: 15, overflow: 'hidden' },
+  fruitImage: { width: '80%', height: '80%', resizeMode: 'contain' },
+  mainCardContent: { flex: 1 },
+  mainCardTitle: { fontSize: 14, color: '#666', fontWeight: '600' },
+  fruitName: { fontSize: 22, color: COLORS.primary, fontWeight: 'bold', textTransform: 'capitalize', marginVertical: 2 },
+  countdownText: { fontSize: 12, color: '#888' },
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 20 },
+  gridButton: { width: '48%', backgroundColor: COLORS.white, paddingVertical: 18, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 2 },
+  gridButtonText: { color: COLORS.primary, fontWeight: 'bold', fontSize: 15 },
+  tipCard: { backgroundColor: '#E3F2FD', borderRadius: 15, padding: 20, borderLeftWidth: 5, borderLeftColor: COLORS.primary },
+  tipTitle: { fontSize: 16, fontWeight: 'bold', color: COLORS.primary },
+  tipText: { fontSize: 14, color: '#333', lineHeight: 22 },
 });
 
 export default HomeScreen;

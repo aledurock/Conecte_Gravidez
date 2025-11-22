@@ -4,34 +4,37 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
-// Importação das Telas
+// --- TELAS DE AUTENTICAÇÃO ---
 import SignInScreen from '../screens/SignInScreen';
-import SignUpScreen from '../screens/SignUpScreen';
+import RegistrationChatScreen from '../screens/RegistrationChatScreen'; 
+
+// --- TELAS DO APP PRINCIPAL ---
 import HomeScreen from '../screens/HomeScreen';
-import CadernetaScreen from '../screens/CadernetaScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AgendaScreen from '../screens/AgendaScreen';
-import QuestionnaireNameScreen from '../screens/QuestionnaireNameScreen';
-import QuestionnaireDateScreen from '../screens/QuestionnaireDateScreen';
-import QuestionnaireDumScreen from '../screens/QuestionnaireDumScreen';
-import QuestionnaireDppScreen from '../screens/QuestionnaireDppScreen';
-import QuestionnaireFirstPregnancyScreen from '../screens/QuestionnaireFirstPregnancyScreen';
-import QuestionnairePrenatalScreen from '../screens/QuestionnairePrenatalScreen';
 import RelatosSintomasScreen from '../screens/RelatosSintomas';
 import SintomasScreen from '../screens/Sintomas';
 import ConsultasScreen from '../screens/ConsultasScreen';
 import MaisScreen from '../screens/MaisScreen';
-import AboutScreen from '../screens/AboutScreen'; // 👈 1. IMPORTA A NOVA TELA
+import AboutScreen from '../screens/AboutScreen';
+
+// NOTA: CadernetaScreen foi removido pois o arquivo não existe mais.
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 
+// --- NAVEGADOR DA HOME (Pilha interna da aba Home) ---
 function HomeNavigator() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
-      <HomeStack.Screen name="Caderneta" component={CadernetaScreen} />
+      
+      {/* REMOVIDO: A linha abaixo causava a TELA BRANCA porque 
+         CadernetaScreen não estava importado.
+      */}
+      {/* <HomeStack.Screen name="Caderneta" component={CadernetaScreen} /> */}
+
       <HomeStack.Screen name="RelatosSintomas" component={RelatosSintomasScreen} />
       <HomeStack.Screen name="HistoricoSintomas" component={SintomasScreen} />
       <HomeStack.Screen name="Consultas" component={ConsultasScreen} />
@@ -40,6 +43,7 @@ function HomeNavigator() {
   );
 }
 
+// --- NAVEGADOR PRINCIPAL (Abas inferiores) ---
 function MainApp() {
   return (
     <Tab.Navigator
@@ -54,7 +58,7 @@ function MainApp() {
             iconName = focused ? 'person-circle' : 'person-circle-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#3B5998',
+        tabBarActiveTintColor: '#3B5998', // Azul do app
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
       })}
@@ -66,75 +70,33 @@ function MainApp() {
   );
 }
 
+// --- NAVEGADOR RAIZ (Controla Login vs App Logado) ---
 export default function AppNavigator() {
   const { userToken } = useAuth();
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {userToken == null ? (
+        // 🔒 SE NÃO ESTIVER LOGADO (Fluxo de Auth)
         <>
           <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
-          <Stack.Screen
-            name="QuestionnaireName"
-            component={QuestionnaireNameScreen}
-            options={{
-              headerShown: true,
-              title: 'Complete seu Cadastro',
-            }}
-          />
-          <Stack.Screen
-            name="QuestionnaireDate"
-            component={QuestionnaireDateScreen}
-            options={{
-              headerShown: true,
-              title: 'Informações da Gestação',
-            }}
-          />
-          <Stack.Screen
-            name="QuestionnaireDumScreen"
-            component={QuestionnaireDumScreen}
-            options={{
-              headerShown: true,
-              title: 'Última Menstruação (DUM)',
-            }}
-          />
-          <Stack.Screen
-            name="QuestionnaireDppScreen"
-            component={QuestionnaireDppScreen}
-            options={{
-              headerShown: true,
-              title: 'Data Provável do Parto (DPP)',
-            }}
-          />
-          <Stack.Screen
-            name="QuestionnaireFirstPregnancy"
-            component={QuestionnaireFirstPregnancyScreen}
-            options={{
-              headerShown: true,
-              title: 'Informações Adicionais',
-            }}
-          />
-          <Stack.Screen
-            name="QuestionnairePrenatal"
-            component={QuestionnairePrenatalScreen}
-            options={{
-              headerShown: true,
-              title: 'Consulta Pré-Natal',
-            }}
+          <Stack.Screen 
+            name="SignUp" 
+            component={RegistrationChatScreen} 
+            options={{ headerShown: false }} 
           />
         </>
       ) : (
+        // 🔓 SE ESTIVER LOGADO (Fluxo Principal)
         <>
           <Stack.Screen name="MainApp" component={MainApp} />
           
-          {/* 👇 2. ADICIONA A TELA "SOBRE" AQUI */}
           <Stack.Screen 
             name="AboutScreen" 
             component={AboutScreen}
             options={{ 
-              headerShown: true, // Para ter o botão "Voltar"
-              title: 'Sobre o App' // Título no topo
+              headerShown: true, 
+              title: 'Sobre o App' 
             }} 
           />
         </>

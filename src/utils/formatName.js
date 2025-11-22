@@ -1,35 +1,49 @@
 /**
- * Formata o nome do usuário de acordo com regras específicas.
- * - Nomes únicos são capitalizados (ex: "aLE" -> "Ale").
- * - Nomes completos mostram o primeiro e o último, capitalizados (ex: "alessandro de lima barbosa" -> "Alessandro Barbosa").
- * @param {string} name - O nome bruto inserido pelo usuário.
- * @returns {string} - O nome formatado.
+ * Formata o nome digitado pelo usuário.
+ * Regra: Capitaliza a primeira letra de cada nome.
+ * Se tiver sobrenome, retorna "Primeiro Sobrenome".
+ * Se for nome único, retorna "Primeiro".
+ * @param {string} name - O nome bruto.
  */
 export const formatUserName = (name) => {
   if (!name) return '';
+  
+  // Remove espaços extras e divide
+  const parts = name.trim().split(/\s+/).filter(part => part.length > 0);
+  
+  if (parts.length === 0) return '';
 
-  // Remove espaços extras e divide o nome em partes, filtrando partes vazias.
-  const parts = name.trim().split(' ').filter(part => part.length > 0);
-
-  if (parts.length === 0) {
-    return '';
-  }
-
-  // Função interna para capitalizar uma palavra corretamente
   const capitalize = (word) => {
-    const firstLetter = word.charAt(0).toUpperCase();
-    const restOfWord = word.slice(1).toLowerCase(); // Força o resto para minúsculo
-    return firstLetter + restOfWord;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   };
 
   if (parts.length === 1) {
-    // Se for só um nome, apenas o capitaliza
     return capitalize(parts[0]);
   } else {
-    // Se for nome completo, pega o primeiro e o último
     const firstName = capitalize(parts[0]);
     const lastName = capitalize(parts[parts.length - 1]);
     return `${firstName} ${lastName}`;
   }
 };
 
+/**
+ * [NOVA FUNÇÃO] Recupera o nome de exibição do usuário a partir do perfil.
+ * Use esta função em qualquer tela (Home, Perfil, etc) para puxar o nome.
+ * * Exemplo de uso:
+ * import { getDisplayName } from '../utils/formatName';
+ * const nome = getDisplayName(userProfile);
+ * * @param {object} userProfile - O objeto de perfil vindo do AuthContext.
+ * @returns {string} - O nome formatado ou 'Nova Mãe' se não encontrar.
+ */
+export const getDisplayName = (userProfile) => {
+  if (!userProfile) return 'Nova Mãe';
+  
+  // Tenta pegar o nome na raiz ou dentro de um sub-objeto user (caso a estrutura varie)
+  const name = userProfile.name || userProfile.user?.name;
+  
+  if (name && name.trim() !== '') {
+    return formatUserName(name); // Garante que esteja formatado
+  }
+  
+  return 'Nova Mãe';
+};

@@ -5,8 +5,9 @@ export const COLORS = {
   secondary: '#FF6347', // Laranja/Coral para a logo
   white: '#FFFFFF',
   lightGray: '#F6F6F6',
-  gray: '#CCCCCC',
+  gray: '#7e7e7eff',
   darkBlue: '#2D4373',
+  red: '#ffffffff',
   text: '#333333'
 };
 

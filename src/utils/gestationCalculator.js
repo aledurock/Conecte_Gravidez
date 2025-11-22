@@ -1,43 +1,54 @@
 /**
- * Calcula os detalhes da gestação a partir do perfil do usuário (DUM ou DPP).
- * @param {object} profile - O objeto de perfil do usuário, contendo dumDate ou dppDate.
- * @returns {object | null} - Um objeto com currentWeek e daysRemaining, ou null se não houver dados.
+ * Calcula a semana atual e dias restantes da gestação.
+ * Recebe o perfil com dumDate ou dppDate (Strings no formato YYYY-MM-DD).
  */
 export const calculateGestationDetails = (profile) => {
-  // Retorna nulo se não houver perfil ou nenhuma data para calcular
-  if (!profile || (!profile.dumDate && !profile.dppDate)) {
-    return null;
-  }
+  // 1. Validação básica
+  if (!profile) return null;
+  
+  // Verifica se tem pelo menos uma das datas
+  if (!profile.dumDate && !profile.dppDate) return null;
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Zera o tempo para comparações de data precisas
+  today.setHours(0, 0, 0, 0); // Zera horas para cálculo preciso de dias
 
   let totalDaysOfGestation = 0;
 
-  if (profile.dumDate) {
-    // Lógica se a DUM foi fornecida
-    const dumDate = new Date(profile.dumDate + 'T00:00:00');
-    const diffTime = today - dumDate;
-    totalDaysOfGestation = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  } else if (profile.dppDate) {
-    // Lógica se a DPP foi fornecida
-    const dppDate = new Date(profile.dppDate + 'T00:00:00');
-    const totalDuration = 280; // Duração média da gestação em dias
-    const daysRemaining = Math.ceil((dppDate - today) / (1000 * 60 * 60 * 24));
-    totalDaysOfGestation = totalDuration - daysRemaining;
-  }
-
-  // Se o cálculo resultar em um número negativo (data no futuro), retorna nulo
-  if (totalDaysOfGestation < 0) {
+  // 2. Cálculo dos dias
+  try {
+    if (profile.dumDate) {
+      // Se tiver DUM (Data da Última Menstruação)
+      // Adiciona T00:00:00 para garantir que o fuso horário não altere o dia
+      const dumDate = new Date(profile.dumDate.includes('T') ? profile.dumDate : profile.dumDate + 'T00:00:00');
+      const diffTime = today.getTime() - dumDate.getTime();
+      totalDaysOfGestation = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    } 
+    else if (profile.dppDate) {
+      // Se tiver DPP (Data Provável do Parto)
+      const dppDate = new Date(profile.dppDate.includes('T') ? profile.dppDate : profile.dppDate + 'T00:00:00');
+      const diffTime = dppDate.getTime() - today.getTime();
+      const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Gestação média é 280 dias (40 semanas)
+      totalDaysOfGestation = 280 - daysRemaining;
+    }
+  } catch (error) {
+    console.log("Erro ao calcular data:", error);
     return null;
   }
 
+  // 3. Se a data for futura ou inválida
+  if (isNaN(totalDaysOfGestation) || totalDaysOfGestation < 0) {
+    return null;
+  }
+
+  // 4. Converte dias em semanas
   const currentWeek = Math.floor(totalDaysOfGestation / 7);
   const daysRemaining = 280 - totalDaysOfGestation;
 
+  // Retorna objeto pronto
   return {
-    currentWeek,
+    currentWeek: currentWeek > 0 ? currentWeek : 1, // Garante pelo menos semana 1
     daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
   };
 };
-
