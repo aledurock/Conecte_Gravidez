@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "517923423605",
+    "firebase_url": "https://conecte-gravidez-default-rtdb.firebaseio.com",
+    "project_id": "conecte-gravidez",
+    "storage_bucket": "conecte-gravidez.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517923423605:android:bea378652acb26ecd1ff3c",
+        "android_client_info": {
+          "package_name": "com.conectegravidez.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMh82pb-Lyn-5Du-epSjZ4KZv93yIeejY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
