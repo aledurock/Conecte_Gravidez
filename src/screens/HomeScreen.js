@@ -115,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
                    {babySizeInfo.size.replace(/^(uma?)\s/, '')}
                 </Text>
                 <Text style={styles.countdownText}>
-                  Faltam aproximadamente {gestationInfo.daysRemaining} dias.
+                  Faltam aproximadamente {gestationInfo.daysRemaining} dias para o grande encontro!
                 </Text>
               </View>
             </View>

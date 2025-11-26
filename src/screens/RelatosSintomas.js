@@ -7,23 +7,22 @@ import {
     TextInput, 
     TouchableOpacity,
     Alert,
-    StatusBar 
+    StatusBar,
+    Image // <--- IMPORTANTE: Adicionado Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../context/AuthContext'; // Já estava aqui
+import { useAuth } from '../context/AuthContext';
 import { COLORS } from '../components/commonStyles';
 
 const RelatosSintomasScreen = ({ navigation }) => {
-    // *** LINHA ATUALIZADA ***
-    const { addSintoma } = useAuth(); // Pegamos a nova função do context
+    const { addSintoma } = useAuth();
     
     const [sintoma, setSintoma] = useState('');
     const [intensidade, setIntensidade] = useState(null); 
     const [notas, setNotas] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // *** FUNÇÃO ATUALIZADA ***
     const handleSaveSymptom = async () => {
         if (!sintoma || !intensidade) {
             Alert.alert('Campos Obrigatórios', 'Por favor, preencha o sintoma e a intensidade.');
@@ -32,22 +31,17 @@ const RelatosSintomasScreen = ({ navigation }) => {
 
         setLoading(true);
 
-        // Cria o objeto do novo relato
         const novoRelato = {
             sintoma: sintoma,
             intensidade: intensidade,
             notas: notas,
         };
 
-        // *** A MÁGICA ACONTECE AQUI ***
-        // Em vez de simular, agora estamos salvando no Context
         addSintoma(novoRelato);
         
-        // Damos um feedback visual
         setLoading(false);
         Alert.alert('Sucesso', 'Sintoma relatado com sucesso!');
         
-        // Limpa o formulário para o próximo relato
         setSintoma('');
         setIntensidade(null);
         setNotas('');
@@ -67,7 +61,12 @@ const RelatosSintomasScreen = ({ navigation }) => {
                     onPress={() => navigation.navigate('HistoricoSintomas')} 
                     style={styles.historyButton}
                 >
-                    <Ionicons name="journal-outline" size={26} color={COLORS.white} />
+                    {/* --- MUDANÇA AQUI: Ícone de Imagem Customizado --- */}
+                    <Image 
+                        source={require('../../assets/icons/historico-icon.png')}
+                        style={{ width: 26, height: 26, tintColor: COLORS.white }}
+                        resizeMode="contain"
+                    />
                 </TouchableOpacity>
             </View>
 
@@ -141,7 +140,6 @@ const RelatosSintomasScreen = ({ navigation }) => {
     );
 };
 
-// ... (SEUS ESTILOS PERMANECEM IGUAIS) ...
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,

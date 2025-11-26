@@ -1,52 +1,53 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../components/commonStyles';
 import { Ionicons } from '@expo/vector-icons';
 
-// Lista de itens do menu
-// Nós vamos navegar para os nomes de tela definidos no seu AppNavigator.js
+// Lista de itens do menu atualizada
 const menuItems = [
     {
         title: 'Minhas Consultas',
-        icon: 'medkit-outline',
-        screen: 'Consultas', // Nome da tela no HomeStack
+        iconName: 'medkit-outline',
+        type: 'ionicon',
+        screen: 'Consultas', 
     },
     {
         title: 'Relatar Sintomas',
-        icon: 'pulse-outline',
-        screen: 'RelatosSintomas', // Nome da tela no HomeStack
+        iconName: 'pulse-outline',
+        type: 'ionicon',
+        screen: 'RelatosSintomas', 
     },
     {
         title: 'Histórico de Sintomas',
-        icon: 'journal-outline',
-        screen: 'HistoricoSintomas', // Nome da tela no HomeStack
+        // --- MUDANÇA AQUI: Tipo imagem e caminho do arquivo ---
+        imageSource: require('../../assets/icons/historico-icon.png'),
+        type: 'image',
+        screen: 'HistoricoSintomas', 
     },
     {
         title: 'Agenda',
-        icon: 'calendar-outline',
-        screen: 'Agenda', // Nome da TAB no MainApp
+        iconName: 'calendar-outline',
+        type: 'ionicon',
+        screen: 'Agenda', 
     },
     {
         title: 'Perfil',
-        icon: 'person-circle-outline',
-        screen: 'Perfil', // Nome da TAB no MainApp
+        iconName: 'person-circle-outline',
+        type: 'ionicon',
+        screen: 'Perfil', 
     },
 ];
 
 const MaisScreen = ({ navigation }) => {
 
     const handleNavigation = (screenName) => {
-        // O navigation.navigate é inteligente. 
-        // Se for 'Agenda' ou 'Perfil', ele vai para a Tab.
-        // Se for 'Consultas', etc., ele vai empilhar a tela.
         navigation.navigate(screenName);
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" />
-            {/* Header Customizado */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color={COLORS.white} />
@@ -62,7 +63,16 @@ const MaisScreen = ({ navigation }) => {
                         onPress={() => handleNavigation(item.screen)}
                     >
                         <View style={styles.menuIcon}>
-                            <Ionicons name={item.icon} size={24} color={COLORS.primary} />
+                            {/* Lógica para renderizar Imagem ou Ícone */}
+                            {item.type === 'image' ? (
+                                <Image 
+                                    source={item.imageSource}
+                                    style={{ width: 24, height: 24, tintColor: COLORS.primary }}
+                                    resizeMode="contain"
+                                />
+                            ) : (
+                                <Ionicons name={item.iconName} size={24} color={COLORS.primary} />
+                            )}
                         </View>
                         <Text style={styles.menuButtonText}>{item.title}</Text>
                         <Ionicons name="chevron-forward-outline" size={22} color={COLORS.gray || '#888'} />
@@ -81,7 +91,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: COLORS.primary,
         paddingHorizontal: 15,
-        paddingTop: 30, // Ajuste para o topo do seu celular
+        paddingTop: 30, 
         paddingBottom: 20,
         flexDirection: 'row',
         alignItems: 'center',
@@ -109,7 +119,7 @@ const styles = StyleSheet.create({
         borderBottomColor: COLORS.lightGray,
     },
     menuIcon: {
-        width: 40, // Largura fixa para alinhar o texto
+        width: 40, 
         alignItems: 'flex-start',
     },
     menuButtonText: {

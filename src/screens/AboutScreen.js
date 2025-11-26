@@ -34,12 +34,12 @@ export default function AboutScreen() {
             <Ionicons name="person-circle-outline" size={28} color={COLORS.primary} />
             <View style={styles.devInfo}>
               <Text style={styles.devName}>Gabriela Sousa</Text>
-              <Text style={styles.devRole}>Desenvolvedora (DEV)</Text>
+              <Text style={styles.devRole}>Desenvolvedor (DEV)</Text>
             </View>
           </View>
 
           <View style={styles.devRow}>
-            <Ionicons name="document-text-outline" size={28} color={COLORS.primary} />
+            <Ionicons name="person-circle-outline" size={28} color={COLORS.primary} />
             <View style={styles.devInfo}>
               <Text style={styles.devName}>Vitoria Maelí</Text>
               <Text style={styles.devRole}>Documentação</Text>
