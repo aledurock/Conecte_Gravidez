@@ -21,11 +21,9 @@ const AVATAR_SECTIONS = [
   {
     title: 'Animais Fofos',
     data: [
-      // Animais (.jpg)
       { id: 'ani_1', type: 'image', source: require('../../assets/images/avatares/avatar_animais/bicho_com_cabelo.jpg') },
       { id: 'ani_2', type: 'image', source: require('../../assets/images/avatares/avatar_animais/gato.jpg') },
       { id: 'ani_3', type: 'image', source: require('../../assets/images/avatares/avatar_animais/raposa.jpg') },
-      // { id: 'ani_4', type: 'image', source: require('../../assets/images/avatares/avatar_animais/hipopotamo.jpg') }, // Removido temporariamente se estiver corrompido
       { id: 'ani_5', type: 'image', source: require('../../assets/images/avatares/avatar_animais/jacare.jpg') },
       { id: 'ani_6', type: 'image', source: require('../../assets/images/avatares/avatar_animais/koala.jpg') },
     ]
@@ -33,7 +31,6 @@ const AVATAR_SECTIONS = [
   {
     title: 'Frutinhas do Bebê',
     data: [
-      // Frutas (.png)
       { id: 'fruta_1', type: 'image', source: require('../../assets/images/avatares/avatar_frutas/azeitona.png') },
       { id: 'fruta_2', type: 'image', source: require('../../assets/images/avatares/avatar_frutas/berinjela.png') },
       { id: 'fruta_3', type: 'image', source: require('../../assets/images/avatares/avatar_frutas/jaca.png') },
@@ -61,7 +58,6 @@ export default function ProfileScreen({ navigation }) {
 
   const displayName = getDisplayName(userProfile);
   
-  // Recupera o avatar salvo no contexto ou usa o padrão
   const currentAvatar = userProfile?.avatar || { type: 'icon', source: 'person-circle-outline', color: COLORS.primary };
 
   const onShare = async () => {
@@ -77,12 +73,10 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const handleSelectAvatar = (avatar) => {
-    // AQUI É A CHAVE: Atualiza o contexto global
     updateUserProfile({ avatar: avatar });
     setAvatarModalVisible(false);
   };
 
-  // Função para renderizar avatar (Imagem ou Ícone)
   const renderAvatar = (avatar, size = 80) => {
     if (avatar && avatar.type === 'image') {
        return <Image source={avatar.source} style={{ width: size, height: size, borderRadius: size/2, borderWidth: 2, borderColor: '#fff', backgroundColor: '#f0f0f0' }} resizeMode="cover" />;
@@ -130,7 +124,8 @@ export default function ProfileScreen({ navigation }) {
               <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem}>
+            {/* --- ATUALIZAÇÃO AQUI: Link para a nova tela --- */}
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ChangePassword')}>
               <Ionicons name="lock-closed-outline" size={24} color={COLORS.text}/>
               <Text style={styles.menuText}>Alterar Senha</Text>
               <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
@@ -158,7 +153,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* --- MODAL DE SELEÇÃO --- */}
+      {/* --- MODAL DE SELEÇÃO DE AVATAR --- */}
       <Modal animationType="slide" transparent={true} visible={isAvatarModalVisible} onRequestClose={() => setAvatarModalVisible(false)}>
         <View style={styles.modalOverlay}>
            <View style={styles.modalContainer}>

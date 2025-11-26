@@ -9,7 +9,7 @@ import SignInScreen from '../screens/SignInScreen';
 import RegistrationChatScreen from '../screens/RegistrationChatScreen'; 
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen'; 
 import NewPasswordScreen from '../screens/NewPasswordScreen'; 
-import PasswordChangedSuccessScreen from '../screens/PasswordChangedSuccessScreen'; // <--- ESTE ARQUIVO PRECISA EXISTIR NA PASTA SCREENS
+import PasswordChangedSuccessScreen from '../screens/PasswordChangedSuccessScreen'; 
 
 // --- TELAS DO APP PRINCIPAL ---
 import HomeScreen from '../screens/HomeScreen';
@@ -20,6 +20,8 @@ import SintomasScreen from '../screens/Sintomas';
 import ConsultasScreen from '../screens/ConsultasScreen';
 import MaisScreen from '../screens/MaisScreen';
 import AboutScreen from '../screens/AboutScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen'; 
+import PasswordChangeDoneScreen from '../screens/PasswordChangeDoneScreen'; // <--- IMPORTADO AQUI
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,7 +88,6 @@ export default function AppNavigator() {
             options={{ headerShown: true, title: 'Nova Senha' }}
           />
 
-          {/* ROTA DE SUCESSO - Se remover a importação acima, remova esta linha também */}
           <Stack.Screen 
             name="PasswordChangedSuccess" 
             component={PasswordChangedSuccessScreen} 
@@ -98,6 +99,20 @@ export default function AppNavigator() {
         <>
           <Stack.Screen name="MainApp" component={MainApp} />
           <Stack.Screen name="AboutScreen" component={AboutScreen} options={{ headerShown: true, title: 'Sobre o App' }} />
+          
+          {/* --- NOVA ROTA DE TROCA DE SENHA --- */}
+          <Stack.Screen 
+            name="ChangePassword" 
+            component={ChangePasswordScreen} 
+            options={{ headerShown: true, title: 'Alterar Senha' }} 
+          />
+          
+           {/* --- NOVA ROTA DE CONFIRMAÇÃO --- */}
+          <Stack.Screen 
+            name="PasswordChangeDone" 
+            component={PasswordChangeDoneScreen} 
+            options={{ headerShown: false }} 
+          />
         </>
       )}
     </Stack.Navigator>
