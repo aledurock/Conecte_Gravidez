@@ -72,11 +72,8 @@ const ConsultasScreen = ({ navigation }) => {
 
     // Atualiza lista quando appointments muda
     useEffect(() => {
-        // Filtra apenas o que é consulta ou exame (ignora lembretes puros se houver)
-        // Se quiser mostrar tudo, remova o filter
         const f = appointments.filter(app => !app.type || app.type === 'consulta' || app.type === 'exame');
         
-        // Ordena por data
         f.sort((a, b) => {
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
@@ -132,7 +129,7 @@ const ConsultasScreen = ({ navigation }) => {
         
         const novaConsulta = {
             title: tipoFinal,
-            date: consultaData, // O AuthContext vai converter pra string
+            date: consultaData,
             time: consultaHora,
             doctor: 'A confirmar', 
             status: 'andamento',
@@ -170,15 +167,12 @@ const ConsultasScreen = ({ navigation }) => {
 
     // --- Renderizadores ---
     const renderConsultaItem = ({ item }) => {
-        // Tratamento de data seguro para evitar tela branca
         let dateDisplay = 'Data inválida';
         try {
-            // Tenta criar data se vier como string YYYY-MM-DD
             const dateObj = new Date(item.date + 'T00:00:00'); 
             if (!isNaN(dateObj.getTime())) {
                 dateDisplay = dateObj.toLocaleDateString('pt-BR');
             } else {
-                // Fallback
                 dateDisplay = item.date; 
             }
         } catch (e) { dateDisplay = item.date }
@@ -242,52 +236,52 @@ const ConsultasScreen = ({ navigation }) => {
 
             {/* --- MODAIS --- */}
             
-            {/* Modal Solicitar */}
+            {/* Modal Solicitar (CORRIGIDO PARA CENTRALIZAR) */}
             <Modal animationType="slide" transparent={true} visible={isRequestModalVisible} onRequestClose={() => setRequestModalVisible(false)}>
+                {/* Adicionado alignItems: center ao estilo modalBackdrop */}
                 <View style={styles.modalBackdrop}>
-                    <ScrollView style={styles.modalScrollView} contentContainerStyle={styles.modalScrollContent}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Nova Consulta</Text>
-                            
-                            <Text style={styles.label}>Tipo</Text>
-                            <TouchableOpacity style={styles.inputButton} onPress={() => setConsultaPickerVisible(true)}>
-                                <Text style={{ color: consultaTipo ? COLORS.text : '#999' }}>
-                                    {consultaTipo || 'Selecione o tipo'}
-                                </Text>
-                                <Ionicons name="chevron-down" size={20} color="#999" />
-                            </TouchableOpacity>
-                            
-                            {consultaTipo === 'Outro' && (
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Descreva a consulta"
-                                    value={consultaTipoOutro}
-                                    onChangeText={setConsultaTipoOutro}
-                                />
-                            )}
-                            
-                            <Text style={styles.label}>Data</Text>
-                            <TouchableOpacity style={styles.inputButton} onPress={() => setDatePickerVisible(true)}>
-                                <Text>{consultaData.toLocaleDateString('pt-BR')}</Text>
-                                <Ionicons name="calendar" size={20} color={COLORS.primary} />
-                            </TouchableOpacity>
+                    {/* Removido ScrollView externo desnecessário para garantir centralização */}
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Nova Consulta</Text>
+                        
+                        <Text style={styles.label}>Tipo</Text>
+                        <TouchableOpacity style={styles.inputButton} onPress={() => setConsultaPickerVisible(true)}>
+                            <Text style={{ color: consultaTipo ? COLORS.text : '#999' }}>
+                                {consultaTipo || 'Selecione o tipo'}
+                            </Text>
+                            <Ionicons name="chevron-down" size={20} color="#999" />
+                        </TouchableOpacity>
+                        
+                        {consultaTipo === 'Outro' && (
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Descreva a consulta"
+                                value={consultaTipoOutro}
+                                onChangeText={setConsultaTipoOutro}
+                            />
+                        )}
+                        
+                        <Text style={styles.label}>Data</Text>
+                        <TouchableOpacity style={styles.inputButton} onPress={() => setDatePickerVisible(true)}>
+                            <Text>{consultaData.toLocaleDateString('pt-BR')}</Text>
+                            <Ionicons name="calendar" size={20} color={COLORS.primary} />
+                        </TouchableOpacity>
 
-                            <Text style={styles.label}>Hora</Text>
-                            <TouchableOpacity style={styles.inputButton} onPress={() => setTimePickerVisible(true)}>
-                                <Text>{consultaHora || 'Selecione a hora'}</Text>
-                                <Ionicons name="time" size={20} color={COLORS.primary} />
-                            </TouchableOpacity>
+                        <Text style={styles.label}>Hora</Text>
+                        <TouchableOpacity style={styles.inputButton} onPress={() => setTimePickerVisible(true)}>
+                            <Text>{consultaHora || 'Selecione a hora'}</Text>
+                            <Ionicons name="time" size={20} color={COLORS.primary} />
+                        </TouchableOpacity>
 
-                            <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#ddd', marginRight: 10 }]} onPress={() => setRequestModalVisible(false)}>
-                                    <Text style={{ color: '#333' }}>Cancelar</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: COLORS.primary }]} onPress={handleRequestAppointment}>
-                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Salvar</Text>
-                                </TouchableOpacity>
-                            </View>
+                        <View style={{ flexDirection: 'row', marginTop: 20 }}>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: '#ddd', marginRight: 10 }]} onPress={() => setRequestModalVisible(false)}>
+                                <Text style={{ color: '#333' }}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: COLORS.primary }]} onPress={handleRequestAppointment}>
+                                <Text style={{ color: 'white', fontWeight: 'bold' }}>Salvar</Text>
+                            </TouchableOpacity>
                         </View>
-                    </ScrollView>
+                    </View>
                 </View>
             </Modal>
 
@@ -327,8 +321,8 @@ const ConsultasScreen = ({ navigation }) => {
             {/* Modal TimePicker */}
             <Modal transparent={true} visible={isTimePickerVisible} animationType="fade" onRequestClose={() => setTimePickerVisible(false)}>
                  <TouchableOpacity style={styles.pickerOverlay} onPress={() => setTimePickerVisible(false)}>
-                     <View style={styles.timePickerContainer}>
-                         <FlatList 
+                      <View style={styles.timePickerContainer}>
+                          <FlatList 
                              data={timeSlots}
                              keyExtractor={item => item}
                              renderItem={({ item }) => (
@@ -336,16 +330,16 @@ const ConsultasScreen = ({ navigation }) => {
                                      <Text style={styles.timeSlotText}>{item}</Text>
                                  </TouchableOpacity>
                              )}
-                         />
-                     </View>
+                          />
+                      </View>
                  </TouchableOpacity>
             </Modal>
 
              {/* Modal Tipo Consulta */}
              <Modal transparent={true} visible={isConsultaPickerVisible} animationType="fade" onRequestClose={() => setConsultaPickerVisible(false)}>
                  <TouchableOpacity style={styles.pickerOverlay} onPress={() => setConsultaPickerVisible(false)}>
-                     <View style={styles.timePickerContainer}>
-                         <FlatList 
+                      <View style={styles.timePickerContainer}>
+                          <FlatList 
                              data={[...CONSULTA_TIPOS_LISTA, 'Outro']}
                              keyExtractor={item => item}
                              renderItem={({ item }) => (
@@ -357,8 +351,8 @@ const ConsultasScreen = ({ navigation }) => {
                                      <Text style={styles.timeSlotText}>{item}</Text>
                                  </TouchableOpacity>
                              )}
-                         />
-                     </View>
+                          />
+                      </View>
                  </TouchableOpacity>
             </Modal>
             
@@ -414,7 +408,12 @@ const styles = StyleSheet.create({
     fab: { position: 'absolute', bottom: 25, right: 25, width: 56, height: 56, borderRadius: 28, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center', elevation: 6 },
     
     // Modais
-    modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+    modalBackdrop: { 
+        flex: 1, 
+        backgroundColor: 'rgba(0,0,0,0.5)', 
+        justifyContent: 'center', 
+        alignItems: 'center' // Adicionado para centralizar horizontalmente
+    },
     modalContent: { backgroundColor: 'white', borderRadius: 15, padding: 20, width: '90%' },
     modalTitle: { fontSize: 18, fontWeight: 'bold', color: COLORS.primary, marginBottom: 15, textAlign: 'center' },
     label: { fontSize: 14, color: '#666', marginBottom: 5, marginTop: 10 },

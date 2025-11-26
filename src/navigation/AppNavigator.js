@@ -7,6 +7,9 @@ import { useAuth } from '../context/AuthContext';
 // --- TELAS DE AUTENTICAÇÃO ---
 import SignInScreen from '../screens/SignInScreen';
 import RegistrationChatScreen from '../screens/RegistrationChatScreen'; 
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen'; 
+import NewPasswordScreen from '../screens/NewPasswordScreen'; 
+import PasswordChangedSuccessScreen from '../screens/PasswordChangedSuccessScreen'; // <--- ESTE ARQUIVO PRECISA EXISTIR NA PASTA SCREENS
 
 // --- TELAS DO APP PRINCIPAL ---
 import HomeScreen from '../screens/HomeScreen';
@@ -18,23 +21,15 @@ import ConsultasScreen from '../screens/ConsultasScreen';
 import MaisScreen from '../screens/MaisScreen';
 import AboutScreen from '../screens/AboutScreen';
 
-// NOTA: CadernetaScreen foi removido pois o arquivo não existe mais.
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 
-// --- NAVEGADOR DA HOME (Pilha interna da aba Home) ---
+// --- NAVEGADOR DA HOME ---
 function HomeNavigator() {
   return (
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="HomeMain" component={HomeScreen} />
-      
-      {/* REMOVIDO: A linha abaixo causava a TELA BRANCA porque 
-         CadernetaScreen não estava importado.
-      */}
-      {/* <HomeStack.Screen name="Caderneta" component={CadernetaScreen} /> */}
-
       <HomeStack.Screen name="RelatosSintomas" component={RelatosSintomasScreen} />
       <HomeStack.Screen name="HistoricoSintomas" component={SintomasScreen} />
       <HomeStack.Screen name="Consultas" component={ConsultasScreen} />
@@ -43,22 +38,19 @@ function HomeNavigator() {
   );
 }
 
-// --- NAVEGADOR PRINCIPAL (Abas inferiores) ---
+// --- NAVEGADOR PRINCIPAL (Abas) ---
 function MainApp() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          if (route.name === 'Home')
-            iconName = focused ? 'home' : 'home-outline';
-          else if (route.name === 'Agenda')
-            iconName = focused ? 'calendar' : 'calendar-outline';
-          else if (route.name === 'Perfil')
-            iconName = focused ? 'person-circle' : 'person-circle-outline';
+          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Agenda') iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Perfil') iconName = focused ? 'person-circle' : 'person-circle-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#3B5998', // Azul do app
+        tabBarActiveTintColor: '#3B5998',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
       })}
@@ -70,35 +62,42 @@ function MainApp() {
   );
 }
 
-// --- NAVEGADOR RAIZ (Controla Login vs App Logado) ---
+// --- NAVEGADOR RAIZ ---
 export default function AppNavigator() {
   const { userToken } = useAuth();
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {userToken == null ? (
-        // 🔒 SE NÃO ESTIVER LOGADO (Fluxo de Auth)
+        // 🔒 SE NÃO ESTIVER LOGADO
         <>
           <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="SignUp" component={RegistrationChatScreen} options={{ headerShown: false }} />
+          
           <Stack.Screen 
-            name="SignUp" 
-            component={RegistrationChatScreen} 
+            name="ForgotPassword" 
+            component={ForgotPasswordScreen} 
+            options={{ headerShown: true, title: 'Recuperar Senha' }}
+          />
+
+          <Stack.Screen 
+            name="NewPassword" 
+            component={NewPasswordScreen} 
+            options={{ headerShown: true, title: 'Nova Senha' }}
+          />
+
+          {/* ROTA DE SUCESSO - Se remover a importação acima, remova esta linha também */}
+          <Stack.Screen 
+            name="PasswordChangedSuccess" 
+            component={PasswordChangedSuccessScreen} 
             options={{ headerShown: false }} 
           />
         </>
       ) : (
-        // 🔓 SE ESTIVER LOGADO (Fluxo Principal)
+        // 🔓 SE ESTIVER LOGADO
         <>
           <Stack.Screen name="MainApp" component={MainApp} />
-          
-          <Stack.Screen 
-            name="AboutScreen" 
-            component={AboutScreen}
-            options={{ 
-              headerShown: true, 
-              title: 'Sobre o App' 
-            }} 
-          />
+          <Stack.Screen name="AboutScreen" component={AboutScreen} options={{ headerShown: true, title: 'Sobre o App' }} />
         </>
       )}
     </Stack.Navigator>
