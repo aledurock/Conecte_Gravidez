@@ -190,7 +190,7 @@ const AgendaScreen = () => {
                 <TouchableOpacity onPress={() => { setPickerDate(newReminder.date); setDatePickerVisible(true); }}>
                   <Text style={styles.addModalText}>{`${newReminder.date.getDate()} ${shortMonthNames[newReminder.date.getMonth()]}. ${newReminder.date.getFullYear()}`}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setTimePickerVisible(true)}>
+                <TouchableOpacity onPress={() => setTimePickerVisible(true)} style={{ marginLeft: 20 }}>
                   <Text style={[styles.addModalText, { marginLeft: 'auto', color: COLORS.primary }]}>{newReminder.time}</Text>
                 </TouchableOpacity>
               </View>
