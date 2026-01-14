@@ -19,6 +19,7 @@ const ScreenWrapper = ({ children, withScroll = true, style }) => {
         style: { flex: 1 } // Se for View normal, ocupa tudo
     };
 
+    
     return (
         <SafeAreaView style={[styles.safeArea, style]}>
             <Container 
