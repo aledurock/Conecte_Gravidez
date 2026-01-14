@@ -15,7 +15,7 @@ export default function PasswordChangeDoneScreen({ navigation }) {
     <View style={commonStyles.container}>
       <View style={{ alignItems: 'center', width: '100%' }}>
         
-        {/* Ícone de Sucesso */}
+        {}
         <Ionicons name="checkmark-circle" size={80} color={COLORS.success} />
         
         <Text style={[commonStyles.title, { marginTop: 20, marginBottom: 10 }]}>
@@ -26,7 +26,7 @@ export default function PasswordChangeDoneScreen({ navigation }) {
           Sua senha de acesso foi atualizada com sucesso.
         </Text>
 
-        {/* Botão para voltar */}
+        {}
         <TouchableOpacity 
           style={[commonStyles.button, { backgroundColor: COLORS.success, marginTop: 30 }]} 
           onPress={handleOk}

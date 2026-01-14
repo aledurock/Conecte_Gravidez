@@ -391,14 +391,14 @@ const RegistrationChatScreen = ({ navigation }) => {
               />
             </View>
             
-            {/* BOTÃO DE TOGGLE INFO (Expandir/Recolher) */}
+            {}
             <TouchableOpacity style={styles.infoButton} onPress={() => setShowPasswordReqs(!showPasswordReqs)}>
                 <Ionicons name="information-circle" size={20} color={COLORS.primary} />
                 <Text style={styles.infoText}>Requisitos da senha</Text>
                 <Ionicons name={showPasswordReqs ? "chevron-up" : "chevron-down"} size={16} color={COLORS.primary} />
              </TouchableOpacity>
              
-             {/* CAIXA DE INFORMAÇÃO QUE ABRE */}
+             {}
              {showPasswordReqs && (
                <View style={styles.passwordReqBox}>
                  <Text style={styles.reqText}>• Exatamente 6 números</Text>

@@ -206,7 +206,7 @@ const ConsultasScreen = ({ navigation }) => {
         <SafeAreaView style={styles.safeArea}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
             
-            {/* Header */}
+            {}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color={COLORS.white} />
@@ -214,7 +214,7 @@ const ConsultasScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Minhas Consultas</Text>
             </View>
             
-            {/* Lista */}
+            {}
             <FlatList
                 data={filteredConsultas}
                 renderItem={renderConsultaItem}
@@ -229,18 +229,18 @@ const ConsultasScreen = ({ navigation }) => {
                 )}
             />
             
-            {/* FAB (Botão Flutuante) */}
+            {}
             <TouchableOpacity style={styles.fab} onPress={openRequestModal}>
                 <Ionicons name="add" size={32} color={COLORS.white} />
             </TouchableOpacity>
 
-            {/* --- MODAIS --- */}
+            {}
             
-            {/* Modal Solicitar (CORRIGIDO PARA CENTRALIZAR) */}
+            {}
             <Modal animationType="slide" transparent={true} visible={isRequestModalVisible} onRequestClose={() => setRequestModalVisible(false)}>
-                {/* Adicionado alignItems: center ao estilo modalBackdrop */}
+                {}
                 <View style={styles.modalBackdrop}>
-                    {/* Removido ScrollView externo desnecessário para garantir centralização */}
+                    {}
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Nova Consulta</Text>
                         
@@ -285,7 +285,7 @@ const ConsultasScreen = ({ navigation }) => {
                 </View>
             </Modal>
 
-            {/* Modal DatePicker Customizado */}
+            {}
             <Modal transparent={true} visible={isDatePickerVisible} animationType="fade" onRequestClose={() => setDatePickerVisible(false)}>
                 <TouchableOpacity style={styles.pickerOverlay} onPress={() => setDatePickerVisible(false)}>
                     <View style={styles.miniCalendarContainer} onStartShouldSetResponder={() => true}>
@@ -318,7 +318,7 @@ const ConsultasScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </Modal>
 
-            {/* Modal TimePicker */}
+            {}
             <Modal transparent={true} visible={isTimePickerVisible} animationType="fade" onRequestClose={() => setTimePickerVisible(false)}>
                  <TouchableOpacity style={styles.pickerOverlay} onPress={() => setTimePickerVisible(false)}>
                       <View style={styles.timePickerContainer}>
@@ -335,7 +335,7 @@ const ConsultasScreen = ({ navigation }) => {
                  </TouchableOpacity>
             </Modal>
 
-             {/* Modal Tipo Consulta */}
+             {}
              <Modal transparent={true} visible={isConsultaPickerVisible} animationType="fade" onRequestClose={() => setConsultaPickerVisible(false)}>
                  <TouchableOpacity style={styles.pickerOverlay} onPress={() => setConsultaPickerVisible(false)}>
                       <View style={styles.timePickerContainer}>
@@ -356,7 +356,7 @@ const ConsultasScreen = ({ navigation }) => {
                  </TouchableOpacity>
             </Modal>
             
-            {/* Modal Cancelar */}
+            {}
             <Modal transparent={true} visible={isCancelModalVisible} animationType="fade" onRequestClose={() => setCancelModalVisible(false)}>
                 <TouchableOpacity style={styles.pickerOverlay} onPress={() => setCancelModalVisible(false)} activeOpacity={1}>
                     <View style={styles.modalContent}>

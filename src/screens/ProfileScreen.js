@@ -101,7 +101,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={true} overScrollMode="always">
-        {/* --- HEADER --- */}
+        {}
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
              {renderAvatar(currentAvatar, 100)}
@@ -114,7 +114,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
 
         <View style={styles.contentContainer}>
-          {/* --- CONFIGURAÇÕES --- */}
+          {}
           <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>Configurações Gerais</Text>
             
@@ -124,7 +124,7 @@ export default function ProfileScreen({ navigation }) {
               <Ionicons name="chevron-forward" size={24} color={COLORS.gray}/>
             </TouchableOpacity>
 
-            {/* --- ATUALIZAÇÃO AQUI: Link para a nova tela --- */}
+            {}
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ChangePassword')}>
               <Ionicons name="lock-closed-outline" size={24} color={COLORS.text}/>
               <Text style={styles.menuText}>Alterar Senha</Text>
@@ -132,7 +132,7 @@ export default function ProfileScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* --- INFO --- */}
+          {}
           <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>Informações</Text>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('AboutScreen')}>
@@ -153,7 +153,7 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* --- MODAL DE SELEÇÃO DE AVATAR --- */}
+      {}
       <Modal animationType="slide" transparent={true} visible={isAvatarModalVisible} onRequestClose={() => setAvatarModalVisible(false)}>
         <View style={styles.modalOverlay}>
            <View style={styles.modalContainer}>

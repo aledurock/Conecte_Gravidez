@@ -68,7 +68,7 @@ export default function ForgotPasswordScreen({ navigation }) {
   return (
     <View style={commonStyles.container}>
       
-      {/* BALÃO DE NOTIFICAÇÃO ANIMADO */}
+      {}
       {showNotification && (
         <Animated.View 
           style={[
@@ -91,7 +91,7 @@ export default function ForgotPasswordScreen({ navigation }) {
       <Text style={[commonStyles.title, { marginBottom: 10 }]}>Recuperar Senha</Text>
       <Text style={styles.subText}>Informe o e-mail cadastrado para receber o código.</Text>
 
-      {/* INPUT EMAIL */}
+      {}
       <View style={commonStyles.inputWithIconContainer}>
         <Ionicons name="mail-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
         <TextInput
@@ -109,7 +109,7 @@ export default function ForgotPasswordScreen({ navigation }) {
         <Text style={commonStyles.buttonText}>{isCodeSent ? 'Reenviar Código' : 'Enviar Código'}</Text>
       </TouchableOpacity>
 
-      {/* INPUT CÓDIGO */}
+      {}
       {isCodeSent && (
         <View style={{ width: '100%', marginTop: 25 }}>
             <Text style={styles.subText}>Digite o código recebido:</Text>

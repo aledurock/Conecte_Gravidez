@@ -160,10 +160,10 @@ const AgendaScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* --- MODAIS --- */}
+      {}
       <Modal transparent={true} visible={isMonthPickerVisible} animationType="fade" onRequestClose={toggleMonthPicker}>
         <TouchableOpacity style={styles.modalOverlay} onPress={toggleMonthPicker}>
-          {/* Adicionando ScrollView ao seletor de mês */}
+          {}
           <ScrollView style={styles.monthPickerContainer} contentContainerStyle={styles.monthPickerContent}>
             {monthNames.map((month, index) => (
               <TouchableOpacity key={month} style={styles.monthItem} onPress={() => handleMonthSelect(index)}>
@@ -274,26 +274,26 @@ const AgendaScreen = () => {
         </TouchableOpacity>
       </Modal>
 
-      {/* --- HEADER --- */}
+      {}
       <View style={styles.header}>
-        {/* Envelopa o ícone para criar um espaçador */}
+        {}
         <View style={styles.iconWrapper}>
           <TouchableOpacity onPress={toggleMonthPicker}>
             <Ionicons name="menu" size={28} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
 
-        {/* Item centralizado */}
+        {}
         <TouchableOpacity style={styles.monthSelector} onPress={toggleYearPicker}>
           <Text style={styles.monthText}>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</Text>
           <Ionicons name={isYearPickerVisible ? "chevron-up" : "chevron-down"} size={20} color={COLORS.primary} />
         </TouchableOpacity>
 
-        {/* Espaçador da direita */}
+        {}
         <View style={styles.iconWrapper} />
       </View>
 
-      {/* --- SELETOR DE ANO --- */}
+      {}
       {isYearPickerVisible && (
         <View style={styles.yearPickerContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center' }}>
@@ -306,7 +306,7 @@ const AgendaScreen = () => {
         </View>
       )}
 
-      {/* --- CALENDÁRIO E LISTA DE COMPROMISSOS --- */}
+      {}
       <ScrollView>
         <View style={styles.calendar}>
           <View style={styles.weekDays}>{dayNames.map(day =>
@@ -323,7 +323,7 @@ const AgendaScreen = () => {
           {appointmentsForMonth.length > 0 &&
             <Text style={styles.appointmentsTitle}>Compromissos em {monthNames[currentDate.getMonth()]}</Text>}
 
-          {/* Lógica da lista */}
+          {}
           {appointmentsForMonth.map(app => {
             let subtitle = '';
             let indicatorColor = '';
@@ -361,7 +361,7 @@ const AgendaScreen = () => {
         </View>
       </ScrollView>
 
-      {/* FAB */}
+      {}
       <TouchableOpacity style={styles.fab} onPress={() => toggleAddModal()}>
         <Ionicons name="add" size={32} color={COLORS.white} />
       </TouchableOpacity>

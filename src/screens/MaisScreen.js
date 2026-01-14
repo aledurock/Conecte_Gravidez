@@ -63,7 +63,7 @@ const MaisScreen = ({ navigation }) => {
                         onPress={() => handleNavigation(item.screen)}
                     >
                         <View style={styles.menuIcon}>
-                            {/* Lógica para renderizar Imagem ou Ícone */}
+                            {}
                             {item.type === 'image' ? (
                                 <Image 
                                     source={item.imageSource}

@@ -119,7 +119,7 @@ export default function SignInScreen({ navigation }) {
            <Text style={styles.rememberText}>Lembrar Senha</Text>
          </TouchableOpacity>
          
-         {/* --- AQUI ESTÁ A ATUALIZAÇÃO --- */}
+         {}
          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
             <Text style={{color: COLORS.darkBlue, fontWeight: 'bold'}}>Esqueceu a Senha?</Text>
          </TouchableOpacity>

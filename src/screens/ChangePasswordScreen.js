@@ -58,7 +58,7 @@ export default function ChangePasswordScreen({ navigation }) {
         Para sua segurança, confirme sua senha atual antes de criar uma nova.
       </Text>
 
-      {/* SENHA ATUAL */}
+      {}
       <Text style={styles.label}>Senha Atual</Text>
       <View style={commonStyles.inputWithIconContainer}>
         <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
@@ -77,7 +77,7 @@ export default function ChangePasswordScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* NOVA SENHA */}
+      {}
       <Text style={styles.label}>Nova Senha</Text>
       <View style={commonStyles.inputWithIconContainer}>
         <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
@@ -96,7 +96,7 @@ export default function ChangePasswordScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* CONFIRMAR NOVA SENHA */}
+      {}
       <Text style={styles.label}>Confirmar Nova Senha</Text>
       <View style={commonStyles.inputWithIconContainer}>
         <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />

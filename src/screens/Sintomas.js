@@ -79,7 +79,7 @@ const SintomasScreen = ({ navigation }) => {
                 <Text style={styles.headerTitle}>Histórico de Sintomas</Text>
             </View>
 
-            {/* *** FLATLIST ATUALIZADA *** */}
+            {}
             <FlatList
                 data={sintomas} // Usando a lista do Context
                 renderItem={SintomaItem}

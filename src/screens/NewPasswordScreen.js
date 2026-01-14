@@ -31,7 +31,7 @@ export default function NewPasswordScreen({ navigation }) {
         Crie uma nova senha numérica de 6 dígitos.
       </Text>
 
-      {/* NOVA SENHA */}
+      {}
       <View style={commonStyles.inputWithIconContainer}>
         <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
         <TextInput
@@ -49,7 +49,7 @@ export default function NewPasswordScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* CONFIRMAR SENHA */}
+      {}
       <View style={commonStyles.inputWithIconContainer}>
         <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray} style={{ marginRight: 10 }} />
         <TextInput

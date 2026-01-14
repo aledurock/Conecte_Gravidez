@@ -61,7 +61,7 @@ const RelatosSintomasScreen = ({ navigation }) => {
                     onPress={() => navigation.navigate('HistoricoSintomas')} 
                     style={styles.historyButton}
                 >
-                    {/* --- MUDANÇA AQUI: Ícone de Imagem Customizado --- */}
+                    {}
                     <Image 
                         source={require('../../assets/icons/historico-icon.png')}
                         style={{ width: 26, height: 26, tintColor: COLORS.white }}
@@ -74,7 +74,7 @@ const RelatosSintomasScreen = ({ navigation }) => {
                 style={styles.container}
                 keyboardShouldPersistTaps="handled"
             >
-                {/* Card de Input do Sintoma */}
+                {}
                 <View style={styles.card}>
                     <Text style={styles.label}>Qual sintoma você está sentindo?</Text>
                     <TextInput
@@ -86,7 +86,7 @@ const RelatosSintomasScreen = ({ navigation }) => {
                     />
                 </View>
 
-                {/* Card de Intensidade */}
+                {}
                 <View style={styles.card}>
                     <Text style={styles.label}>Qual a intensidade?</Text>
                     <View style={styles.intensityContainer}>
@@ -110,7 +110,7 @@ const RelatosSintomasScreen = ({ navigation }) => {
                     </View>
                 </View>
 
-                {/* Card de Anotações */}
+                {}
                 <View style={styles.card}>
                     <Text style={styles.label}>Anotações adicionais (opcional)</Text>
                     <TextInput
@@ -124,7 +124,7 @@ const RelatosSintomasScreen = ({ navigation }) => {
                     />
                 </View>
 
-                {/* Botão de Salvar */}
+                {}
                 <TouchableOpacity 
                     style={[styles.saveButton, loading && styles.saveButtonDisabled]} 
                     onPress={handleSaveSymptom}
